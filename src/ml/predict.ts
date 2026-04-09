@@ -37,7 +37,9 @@ export interface PredictionResult {
  */
 export function predictAtsScore(data: Partial<ResumeData>): PredictionResult {
     const model = loadModel();
+    console.log(`[ML PIPELINE] Starting inference for version ${model.version}`);
     const features = extractResumeFeatures(data);
+    console.log(`[ML PIPELINE] Features extracted: ${features.resumeLength} words, ${features.skillsCount} skills`);
 
     // Scoring logic (using loaded model artifact)
     const weights = model.weights;

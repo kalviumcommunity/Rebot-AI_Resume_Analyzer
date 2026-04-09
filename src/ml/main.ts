@@ -5,6 +5,7 @@
 import { trainMain } from "./train";
 import { evalMain } from "./evaluate";
 import { predictAtsScore } from "./predict";
+import { predictBaselineScore } from "./baseline";
 
 /**
  * End-to-End Orchestrator.
@@ -28,8 +29,14 @@ function main() {
         skills: { languages: ["TypeScript"], frontend: ["React"] },
         experience: [{ title: "Developer", description: "Improved performance by 25%." }]
     } as any;
+    
     const result = predictAtsScore(sample);
-    console.log(`\nSample ATS Score: ${result.score} (${result.label})`);
+    const baseline = predictBaselineScore(sample);
+
+    console.log(`\nSample Results:`);
+    console.log(`- ML ATS Score:   ${result.score} (${result.label})`);
+    console.log(`- Baseline Score: ${baseline}`);
+    console.log(`- ML Improvement: ${result.score - baseline} pts`);
     console.log("------------------------------------------");
     console.log("🚀 ORCHESTRATION COMPLETE");
 }
