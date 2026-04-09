@@ -48,3 +48,32 @@ export const CONFIG = {
     MISSING_CONTACT_PENALTY: -10,
   }
 };
+
+/**
+ * Kalvium Milestone 5.14: Feature & Target Definitions
+ */
+export const TARGET = "ats_score";
+
+export const NUMERICAL_FEATURES = [
+  "keywordDensity",
+  "actionVerbCount",
+  "metricCount",
+  "skillsCount",
+  "experienceYears"
+];
+
+export const CATEGORICAL_FEATURES: string[] = [];
+
+export const ALL_FEATURES = [
+  ...NUMERICAL_FEATURES,
+  ...CATEGORICAL_FEATURES
+];
+
+/**
+ * Columns formally excluded from the predictive model.
+ */
+export const EXCLUDED = [
+  "rawText", // Source data, converted into features.
+  "userId",  // Identifier, carries no predictive signal.
+  "id"       // Row identifier, risk of overfitting.
+];
