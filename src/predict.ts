@@ -1,10 +1,10 @@
 /**
- * Kalvium Milestone 5.8: Prediction & Inference
- * Responsibility: Generating real-time ATS scores using persisted models.
+ * Kalvium Milestone 5.12: Inference & Serving
+ * Responsibility: Generating real-time ATS scores using ONLY persisted artifacts.
  * 
- * CRITICAL: This module NEVER trains or fits weights. It only CONSUMES.
+ * INFERENCE PURITY: This module strictly uses 'transform()' behaviors. 
+ * It NEVER calls saveModel(), trainMain(), or any fitting logic.
  */
-import fs from "fs";
 import { CONFIG } from "./config";
 import { extractResumeFeatures, ResumeFeatures } from "./feature_engineering";
 import { ResumeData } from "@/types/resumeTypes";
