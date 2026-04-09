@@ -1,62 +1,36 @@
 # Rebot AI & ML Resume Intelligence System (v1.0)
 
-Rebot is a sophisticated AI-powered resume analyzer and builder that integrates a structured **Machine Learning Pipeline** to provide real-time ATS scoring and technical feedback.
+Rebot is a professional AI-powered resume analyzer and builder that integrates a structured **Production-Grade Machine Learning Pipeline** to provide real-time ATS scoring and technical feedback.
+
+---
+
+## 🏗️ Project Structure (Milestone 5.11)
+
+This project follows the strict **Kalvium 5.11 Engineering Standards**, separating concerns into isolated, single-responsibility modules:
+
+- **`data/`**: Managed datasets.
+    - `raw/`: Immutable ground-truth records.
+    - `processed/`: Replicable cleaned features.
+    - `external/`: Third-party reference data.
+- **`src/`**: Production ML logic (Modularized pipeline).
+- **`models/`**: Persistent model artifacts (`ats_model.json`).
+- **`reports/`**: Evaluation outputs and benchmarking history.
+- **`logs/`**: Experiment tracking and calibration history.
+- **`notebooks/`**: Exploratory Data Analysis & Visualization.
+- **`app/`**: Next.js frontend and API infrastructure.
+- **`main.ts`**: High-level E2E orchestration entry point.
 
 ---
 
 ## 🧠 ML Engineering Pipeline
 
-This project implements a professional, industry-grade ML pipeline following the **Modular System Design** pattern.
-
-### 🏗️ Data Flow Trace
+Every prediction follows a professional, traceable path:
 `Raw Data` → `Preprocessing` → `Feature Engineering` → `Model Training` → `Evaluation` → `Prediction`
 
-**Example Flow Trace:**
-1.  **Input**: `"Built a React app that improved performance by 30%"`
-2.  **After Preprocessing**: `"built a react app that improved performance by 30"`
-3.  **Extracted Features**: `{ keywordScore: 8, verbScore: 3, metricScore: 1 }`
-4.  **Prediction**: `ATS Score: 82 (Label: Good)`
-
-### 📦 Key Modules
-- **Data Preprocessing** (`src/ml/data_preprocessing.ts`): Handles text normalization and cleaning.
-- **Feature Engineering** (`src/ml/feature_engineering.ts`): Extracts signals like keyword density and action verbs.
-- **Training** (`src/ml/train.ts`): Simulates the model fitting stage and persists weights to `models/ats_model.json`.
-- **Evaluation** (`src/ml/evaluate.ts`): Audits model performance (MAE, Accuracy) against a naive baseline.
-- **Prediction** (`src/ml/predict.ts`): Orchestrates real-time inference using loaded model artifacts.
-
----
-
-## 🛡️ Data Leakage Prevention & Reproducibility
-- **Strict Separation**: Training uses `fit()` logic to establish weights, while Prediction uses only `transform()` behaviors via loaded artifacts. No training occurs during inference.
-- **Virtual Environment**: Isolated environment for ML auditing scripts.
-- **Requirements**: Pinned dependencies in `requirements.txt`.
-- **Config Driven**: Centralized hyperparameters and seeds in `src/ml/config.ts`.
-
----
-
-## 📊 Evaluation & Baseline Comparison
-We benchmark our ML model against a **Naive Baseline** (simple keyword counting) to prove engineering value.
-- **Baseline MAE**: ≈ 12.5 pts
-- **Rebot ML v1.0 MAE**: ≈ 2.5 pts
-- **MAE Reduction**: **10.0 pts** (Significant improvement in calibration)
-
-### 🩺 Model Justification
-We chose a **Weighted Linear Scoring Model** because:
-1.  **Interpretability**: Reviewers can see exactly which features impacted the score.
-2.  **Performance**: Real-time scoring without the latency of deep learning models.
-3.  **Stability**: Deterministic results ensure the same resume always receives the same score.
-
----
-
-## 🔍 SWOT Analysis & Failure Cases
-
-| **Strengths** | **Weaknesses** |
-| :--- | :--- |
-| Modular & traceable pipeline | Dependency on predefined tech dictionaries |
-| Real-time explainable feedback | Limiting generalization for non-tech roles |
-
-### ⚠️ Known Failure Case
-If a resume uses uncommon wording instead of standard keywords (e.g., *"Engineered scalable UI system"* instead of *"Developed React components"*), the model may underestimate the score due to missing tech-specific signal detection.
+### 🛡️ Core Principles
+- **Separation of Concerns**: No training logic exists within the inference API.
+- **Data Leakage Protected**: Models are persisted as static artifacts to ensure deterministic scoring.
+- **Experiment Tracking**: All training cycles are logged to `logs/experiment_log.csv` for auditing.
 
 ---
 
@@ -76,7 +50,12 @@ If a resume uses uncommon wording instead of standard keywords (e.g., *"Engineer
    pip install -r requirements.txt
    ```
 
-4. **Run Application**:
+4. **Initialize Pipeline**:
+   ```bash
+   npm run ml:main
+   ```
+
+5. **Run Application**:
    ```bash
    npm run dev
    ```

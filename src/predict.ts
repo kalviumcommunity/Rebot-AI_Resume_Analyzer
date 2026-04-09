@@ -8,18 +8,7 @@ import fs from "fs";
 import { CONFIG } from "./config";
 import { extractResumeFeatures, ResumeFeatures } from "./feature_engineering";
 import { ResumeData } from "@/types/resumeTypes";
-
-/**
- * Loads the model artifacts from the root-level 'models/' folder.
- * Ensures model reproducibility by relying on saved JSON files.
- * @returns The fitted weights and model metadata
- */
-export function loadModel() {
-    if (!fs.existsSync(CONFIG.MODEL_PATH)) {
-        throw new Error(`Model not found at ${CONFIG.MODEL_PATH}. Run 'npm run ml:train' first.`);
-    }
-    return JSON.parse(fs.readFileSync(CONFIG.MODEL_PATH, "utf-8"));
-}
+import { loadModel } from "./persistence";
 
 export interface PredictionResult {
     score: number;
