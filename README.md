@@ -45,6 +45,25 @@ The following columns are formally excluded to prevent overfitting or logical ci
 
 ---
 
+## 📊 Feature Distribution Analysis (Milestone 5.15)
+All features were inspected before modeling to detect skewness, outliers, and distribution patterns.
+
+- **`keywordDensity`**: Symmetric distribution (0-1 range). No scaling required.
+- **`actionVerbCount`**: Long-tailed (Right Skewed). Capped at 10 to minimize outlier impact.
+- **`metricCount`**: Sparse distribution; many resumes have 0 metrics.
+- **`resumeLength`**: Wide variation across samples. No extreme anomalies detected.
+
+### 📐 Transformation Decision
+No log or scaling transformations were applied because:
+1. All feature values (counts, densities) are within controlled, interpretable ranges.
+2. The model uses a weighted scoring engine where feature scale is handled by the weights themselves.
+
+### 📈 Feature vs Target Insights
+- **Strong Correlation**: `keywordDensity` and `metricCount` show the highest positive impact on the `ats_score`.
+- **Moderate Impact**: `actionVerbCount` provides a secondary signal for resume quality.
+
+---
+
 ## 🧑💼 Selection-Level Interview Answer (CRITICAL)
 > "My Rebot implementation is primarily a **regression problem** since its main goal is to predict a continuous ATS score. However, I’ve incorporated a **classification layer** to categorize resumes into Good, Average, and Poor segments. This hybrid approach ensures both high-resolution precision for the backend audit and clear interpretability for the end user."
 

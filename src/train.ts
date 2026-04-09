@@ -3,10 +3,12 @@ import { CONFIG, TARGET, ALL_FEATURES } from "./config";
 import { saveModel } from "./persistence";
 import { getEvaluationReport } from "./evaluate";
 import { loadData } from "./data_loader";
+import { extractResumeFeatures } from "./feature_engineering";
+import { analyzeFeatures } from "./feature_analysis";
 
 /**
  * Orchestrates the Training stage of the ML Lifecycle.
- * Adheres to 5.14: Explicit X/y Separation and Leakage Detection.
+ * Adheres to 5.15: Feature Distribution Inspection & Analysis.
  */
 function main() {
     console.log("==========================================");
@@ -18,8 +20,15 @@ function main() {
         console.log("[STAGE 1] Loading Raw Data...");
         const data = loadData(CONFIG.DATA_PATH);
         
-        // 2. Feature & Target Separation (Milestone 5.14)
-        console.log("[STAGE 2] Separating Features (X) and Target (y)...");
+        // 2. Feature Extraction (For Analysis)
+        console.log("[STAGE 2] Extracting Features for Dataset Audit...");
+        const featuresArray = data.map((item: any) => extractResumeFeatures(item));
+
+        // 3. Feature Distribution Inspection (Milestone 5.15)
+        analyzeFeatures(featuresArray);
+
+        // 4. Feature & Target Separation (Milestone 5.14)
+        console.log("[STAGE 3] Separating Features (X) and Target (y)...");
         const X = ALL_FEATURES; // Features list from config
         const y = TARGET;       // Target definition from config
 
