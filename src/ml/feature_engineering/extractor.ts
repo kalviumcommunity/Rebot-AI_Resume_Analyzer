@@ -1,40 +1,40 @@
 import { ResumeData } from "@/types/resumeTypes";
-import { cleanText } from "@/ml/preprocessing/cleanText";
-import { CONFIG } from "@/ml/config";
+import { CONFIG } from "../config";
 
+/**
+ * Encapsulates all signals extracted from a resume.
+ */
 export interface ResumeFeatures {
-  keywordDensity: number;      // 0-1
-  actionVerbCount: number;     // Absolute count
-  metricCount: number;         // Absolute count
-  resumeLength: number;        // Total word count
-  skillsCount: number;         // Total skills listed
-  hasContactInfo: boolean;     // Binary
-  experienceYears: number;     // Estimated years
+  keywordDensity: number;
+  actionVerbCount: number;
+  metricCount: number;
+  resumeLength: number;
+  skillsCount: number;
+  hasContactInfo: boolean;
+  experienceYears: number;
 }
 
 /**
- * Transforms raw resume data into engineered features for the ML model.
- * Adheres to professional standardization by using centralized CONFIG.
+ * Transforms cleaned text and structured data into a feature vector.
  * 
- * @param data - Raw resume data (partial)
- * @returns ResumeFeatures vector
+ * @param data - The partial resume data object.
+ * @param cleanedText - The cleaned text string from the preprocessing stage.
+ * @returns An object containing all engineered features.
  */
-export function extractFeatures(data: Partial<ResumeData>): ResumeFeatures {
-  const fullText = JSON.stringify(data);
-  const cleanedText = cleanText(fullText);
+export function extractFeatures(data: Partial<ResumeData>, cleanedText: string): ResumeFeatures {
   const words = cleanedText.split(" ");
 
-  // 1. Keyword Density (Using CONFIG)
+  // 1. Keyword Density
   let matchedKeywords = 0;
   CONFIG.TECH_KEYWORDS.forEach(kw => {
     if (cleanedText.includes(kw)) matchedKeywords++;
   });
   const keywordDensity = matchedKeywords / CONFIG.TECH_KEYWORDS.length;
 
-  // 2. Action Verbs (Using CONFIG)
+  // 2. Action Verbs
   let actionVerbCount = 0;
   const verbsSet = new Set(CONFIG.ACTION_VERBS);
-  words.forEach((word: string) => {
+  words.forEach(word => {
     if (verbsSet.has(word)) actionVerbCount++;
   });
 

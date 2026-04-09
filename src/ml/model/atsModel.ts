@@ -1,11 +1,16 @@
-import { ResumeFeatures } from "../features/extractor";
+import { ResumeFeatures } from "../feature_engineering/extractor";
+import { loadModel } from "./loadModel";
+import { CONFIG } from "../config";
 
+/**
+ * Result of a model prediction.
+ */
 export interface PredictionResult {
   score: number;
-  baselineScore: number; // Naive keyword count comparison
+  baselineScore: number;
   label: "Good" | "Poor";
   confidence: number;
-  version: string;       // Model versioning
+  version: string;
   featureContributions: {
     name: string;
     contribution: number;
@@ -14,42 +19,34 @@ export interface PredictionResult {
 }
 
 /**
- * Supervised Learning Model v1.0 (Weighted Scoring).
- * This simulates a Linear Regression model mapping features to a calibrated ATS score.
- * It also calculates a 'Baseline' score (simple keyword match) to prove ML value.
+ * Supervised Learning Inference Engine.
+ * Calibrates features into a final ATS score using loaded weights.
+ * 
+ * @param features - The vector of engineered features.
+ * @returns A detailed prediction result including impact factors.
  */
 export function predictAtsScore(features: ResumeFeatures): PredictionResult {
-  const version = "v1.0";
-
-  // Model Weights (Learned parameters representation)
-  const weights = {
-    keywordDensity: 40,    // High impact
-    actionVerbCount: 15,   // Moderate
-    metricCount: 20,       // Moderate-high
-    skillsCount: 15,       // Moderate
-    experienceYears: 10,   // Low-moderate
-  };
+  const { weights, metadata } = loadModel();
 
   // 0. Baseline Calculation (Naive Keyword Match)
-  // A standard ATS usually just looks at keywords.
   const baselineScore = Math.round(features.keywordDensity * 100);
 
   // Base Scatters
   let rawScore = 0;
   
-  // 1. Keyword Contribution (max 40)
+  // 1. Keyword Contribution
   const kwContrib = Math.min(features.keywordDensity * 100, 100) * (weights.keywordDensity / 100);
   
-  // 2. Action Verbs (max 15, goal is 10+ verbs)
+  // 2. Action Verbs
   const verbContrib = (Math.min(features.actionVerbCount, 10) / 10) * weights.actionVerbCount;
   
-  // 3. Metrics (max 20, goal is 5+ metrics)
+  // 3. Metrics
   const metricContrib = (Math.min(features.metricCount, 5) / 5) * weights.metricCount;
   
-  // 4. Skills (max 15, goal is 15+ skills)
+  // 4. Skills
   const skillContrib = (Math.min(features.skillsCount, 15) / 15) * weights.skillsCount;
   
-  // 5. Experience (max 10, goal is 5+ years)
+  // 5. Experience
   const expContrib = (Math.min(features.experienceYears, 5) / 5) * weights.experienceYears;
 
   rawScore = kwContrib + verbContrib + metricContrib + skillContrib + expContrib;
@@ -58,23 +55,23 @@ export function predictAtsScore(features: ResumeFeatures): PredictionResult {
   let lengthPenalty = 0;
   let contactPenalty = 0;
 
-  if (features.resumeLength < 100) {
-    lengthPenalty = -15; // Too short penalty
+  if (features.resumeLength < CONFIG.PENALTIES.MIN_LENGTH) {
+    lengthPenalty = CONFIG.PENALTIES.LENGTH_PENALTY;
     rawScore += lengthPenalty;
   }
   if (!features.hasContactInfo) {
-    contactPenalty = -10; // Missing contact penalty
+    contactPenalty = CONFIG.PENALTIES.MISSING_CONTACT_PENALTY;
     rawScore += contactPenalty;
   }
 
-  const finalScore = Math.max(0, Math.min(100, Math.round(rawScore)));
+  const finalScore = Math.max(0, Math.min(CONFIG.MAX_SCORE, Math.round(rawScore)));
 
   return {
     score: finalScore,
     baselineScore: baselineScore,
-    label: finalScore >= 70 ? "Good" : "Poor",
+    label: finalScore >= metadata.thresholds.good ? "Good" : "Poor",
     confidence: 0.92,
-    version,
+    version: metadata.version,
     featureContributions: [
       { name: "Keywords", contribution: Math.round(kwContrib), impact: "positive" },
       { name: "Action Verbs", contribution: Math.round(verbContrib), impact: "positive" },

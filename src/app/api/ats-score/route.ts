@@ -1,9 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
-import { extractFeatures } from "@/ml/features/extractor";
-import { predictAtsScore } from "@/ml/model/atsModel";
+import { runPrediction } from "@/ml/predict/predict";
 import { getEvaluationReport } from "@/ml/evaluation/metrics";
 import { ResumeData } from "@/types/resumeTypes";
 
+/**
+ * Endpoint to process a resume through the full ML pipeline.
+ * Separates API concerns from ML logic by using the orchestrated 'runPrediction' pipeline.
+ * 
+ * @param req - The Next.js request object containing resumeData.
+ * @returns JSON response with prediction, features, and system evaluation.
+ */
 export async function POST(req: NextRequest) {
   try {
     const { resumeData }: { resumeData: Partial<ResumeData> } = await req.json();
@@ -12,26 +18,18 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Resume data is required" }, { status: 400 });
     }
 
-    // ML Pipeline Execution
-    
-    // 1. Data Cleaning (happens inside extractFeatures for simplicity in this demo)
-    // 2. Feature Engineering
-    const features = extractFeatures(resumeData);
+    // ML Pipeline Execution (Orchestrated Stage)
+    const result = runPrediction(resumeData);
 
-    // 3. Model Prediction (Inference)
-    const prediction = predictAtsScore(features);
-
-    // 4. Evaluation (Simulated metrics for this model version)
+    // Evaluation Data for Monitoring & UI Transparency
     const evaluation = getEvaluationReport();
 
-    // 5. Monitoring (Log result - simulation)
-    console.log(`[ML MONITOR] Prediction generated. Score: ${prediction.score}, Label: ${prediction.label}`);
+    // System Monitoring (Simulation)
+    console.log(`[ML MONITOR] Prediction generated. Score: ${result.score}, Label: ${result.label}`);
 
     return NextResponse.json({
       success: true,
-      pipeline: "Data -> Features -> Model -> Prediction",
-      prediction,
-      features,
+      ...result,
       evaluation,
       timestamp: new Date().toISOString()
     });
