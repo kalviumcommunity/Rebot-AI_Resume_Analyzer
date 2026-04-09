@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "features": {
+      "keywordDensity": 0.8,
+      "actionVerbCount": 12,
+      "metricCount": 5,
+      "skillsCount": 20,
+      "experienceYears": 5
+    },
+    "actualScore": 92,
+    "label": "Good"
+  },
+  {
+    "id": 2,
+    "features": {
+      "keywordDensity": 0.2,
+      "actionVerbCount": 2,
+      "metricCount": 0,
+      "skillsCount": 5,
+      "experienceYears": 1
+    },
+    "actualScore": 35,
+    "label": "Poor"
+  }
+]
