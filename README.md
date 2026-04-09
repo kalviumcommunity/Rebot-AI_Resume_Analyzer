@@ -4,21 +4,22 @@ Rebot is a professional AI-powered resume analyzer and builder that integrates a
 
 ---
 
-## 🏗️ Project Structure (Milestone 5.11)
+## 🏗️ ML Lifecycle & Separation (Milestone 5.12)
 
-This project follows the strict **Kalvium 5.11 Engineering Standards**, separating concerns into isolated, single-responsibility modules:
+Rebot enforces a strict architectural boundary between Training and Prediction to ensure model reproducibility and runtime stability.
 
-- **`data/`**: Managed datasets.
-    - `raw/`: Immutable ground-truth records.
-    - `processed/`: Replicable cleaned features.
-    - `external/`: Third-party reference data.
-- **`src/`**: Production ML logic (Modularized pipeline).
-- **`models/`**: Persistent model artifacts (`ats_model.json`).
-- **`reports/`**: Evaluation outputs and benchmarking history.
-- **`logs/`**: Experiment tracking and calibration history.
-- **`notebooks/`**: Exploratory Data Analysis & Visualization.
-- **`app/`**: Next.js frontend and API infrastructure.
-- **`main.ts`**: High-level E2E orchestration entry point.
+### 🔄 Training Pipeline
+`Raw Data (data_loader.ts)` → `Preprocessing` → `Features` → `Fitting (train.ts)` → `Artifact Persistence (persistence.ts)`
+
+### 🚀 Prediction Pipeline (Inference)
+`Input` → `Load Artifacts (persistence.ts)` → `Transform` → `Inference (predict.ts)`
+
+---
+
+## 🛡️ Data Leakage Prevention 
+- **Fit vs. Transform Separation**: Preprocessing parameters are only learned during the Training phase (`fit`). The Prediction phase uses these parameters exactly as-is (`transform`).
+- **Inference Purity**: The `predict.ts` module is architecturally forbidden from retraining or modifying model weights.
+- **Artifact Immutability**: Production inference strictly consumes persisted JSON artifacts, preventing "drift" between experiments and serving.
 
 ---
 

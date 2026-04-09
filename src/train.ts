@@ -1,15 +1,12 @@
-/**
- * Kalvium Milestone 5.8 & 5.11: Training & Model Persistence
- * Responsibility: Fitting the "Model", saving artifacts, and logging experiments.
- */
 import fs from "fs";
 import { CONFIG } from "./config";
 import { saveModel } from "./persistence";
 import { getEvaluationReport } from "./evaluate";
+import { loadData } from "./data_loader";
 
 /**
  * Orchestrates the Training stage of the ML Lifecycle.
- * Adheres to 5.11: Outputs artifacts to models/, reports to reports/, logs to logs/.
+ * Adheres to 5.12: Separation of Loading, Fitting, and Persistence.
  */
 function main() {
     console.log("==========================================");
@@ -17,6 +14,12 @@ function main() {
     console.log("==========================================\n");
 
     try {
+        // 1. Data Loading (Separated Layer)
+        console.log("[STAGE 1] Loading Raw Data...");
+        const data = loadData(CONFIG.DATA_PATH);
+        console.log(`[STAGE 1] Successfully loaded ${data.length} records.`);
+
+        // 2. Model Fitting (In-memory logic)
         // In this supervised simulation, we "Train" by establishing 
         // a calibrated weighted model for inference.
         const model = {
@@ -26,7 +29,7 @@ function main() {
             weights: CONFIG.WEIGHTS,
         };
 
-        console.log("Fitting model to configuration...");
+        console.log("[STAGE 2] Fitting model to configuration...");
         saveModel(model);
 
         // 2. Generate Evaluation Report (Milestone 5.11)
