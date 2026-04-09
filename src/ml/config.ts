@@ -1,13 +1,22 @@
 /**
- * ML Pipeline Configuration
- * Centralizes all hyperparameters, dictionaries, and versioning info.
- * This ensures the system is deterministic and easy to tune.
+ * Kalvium ML Sprint 5.8 Configuration
+ * Centralizes all hyperparameters, file paths, and versioning.
+ * Uses root-level paths for Data and Model persistence.
  */
+import path from "path";
+
+// In a real project, we'd use process.cwd() or relative pathing that works in both dev/prod
+const ROOT = process.cwd();
+
 export const CONFIG = {
   MODEL_VERSION: "v1.0",
   MAX_SCORE: 100,
   RANDOM_SEED: 42,
   
+  // Data & Model Paths (Root Level)
+  DATA_PATH: path.join(ROOT, "data/raw/resumes.json"),
+  MODEL_PATH: path.join(ROOT, "models/ats_model.json"),
+
   // Feature Engineering Dictionaries
   ACTION_VERBS: [
     "led", "managed", "developed", "built", "created", "designed", "implemented",
@@ -21,7 +30,7 @@ export const CONFIG = {
     "frontend", "fullstack", "machine learning", "ai", "devops", "ci/cd"
   ],
 
-  // Model Parameters (Calibrated Weights)
+  // Calibrated Weights
   WEIGHTS: {
     keywordDensity: 40,
     actionVerbCount: 15,
@@ -30,13 +39,5 @@ export const CONFIG = {
     experienceYears: 10,
   },
 
-  // Scoring Thresholds
   GOOD_SCORE_THRESHOLD: 70,
-
-  // Monitoring Penalties
-  PENALTIES: {
-    MIN_LENGTH: 100,
-    LENGTH_PENALTY: -15,
-    MISSING_CONTACT_PENALTY: -10,
-  }
 };

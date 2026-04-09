@@ -1,42 +1,40 @@
-import { runPrediction } from "./predict/predict";
-import { CONFIG } from "./config";
+/**
+ * Kalvium Milestone 5.8: Main Orchestration
+ * Responsibility: Executing the full end-to-end ML Pipeline.
+ */
+import { trainMain } from "./train";
+import { evalMain } from "./evaluate";
+import { predictAtsScore } from "./predict";
 
 /**
- * Standalone Pipeline Runner.
- * Simulates a full system execution for testing and debugging.
+ * End-to-End Orchestrator.
+ * Follows the precise data flow: Train -> Save -> Load -> Evaluate -> Predict.
  */
 function main() {
-  console.log("==========================================");
-  console.log(`   REBOT ML SYSTEM MAIN RUNNER (${CONFIG.MODEL_VERSION})   `);
-  console.log("==========================================\n");
+    console.log("🚀 TRIGGERING FULL SYSTEM ORCHESTRATION");
+    console.log("------------------------------------------");
 
-  const sampleResume = {
-    user: { name: "John Doe", email: "john@example.com" },
-    skills: {
-      languages: ["TypeScript", "Python"],
-      frontend: ["React", "Next.js"]
-    },
-    experience: [
-      { title: "Software Engineer", description: "Built a React app with 30% performance improvement." }
-    ]
-  };
+    // 1. Training (Fitting)
+    console.log("[STAGE 1] Running Training...");
+    trainMain();
 
-  console.log("Input: Sample Resume (React Engineer)");
-  console.log("Processing...\n");
+    // 2. Evaluation (Auditing)
+    console.log("[STAGE 2] Running Evaluation...");
+    evalMain();
 
-  const result = runPrediction(sampleResume);
-
-  console.log("--- Results ---");
-  console.log(`ATS Score:      ${result.score}`);
-  console.log(`Baseline Score: ${result.baselineScore}`);
-  console.log(`Status:         ${result.label}`);
-  console.log(`Confidence:     ${(result.confidence * 100).toFixed(0)}%`);
-  console.log("\n--- Top Features ---");
-  result.prediction.featureContributions.slice(0, 3).forEach(fc => {
-    console.log(`${fc.name}: ${fc.contribution > 0 ? '+' : ''}${fc.contribution} pts`);
-  });
-
-  console.log("\n==========================================\n");
+    // 3. Sample Prediction (Serving)
+    console.log("[STAGE 3] Running Sample Prediction...");
+    const sample = {
+        skills: { languages: ["TypeScript"], frontend: ["React"] },
+        experience: [{ title: "Developer", description: "Improved performance by 25%." }]
+    } as any;
+    const result = predictAtsScore(sample);
+    console.log(`\nSample ATS Score: ${result.score} (${result.label})`);
+    console.log("------------------------------------------");
+    console.log("🚀 ORCHESTRATION COMPLETE");
 }
 
-main();
+// Kalvium Requirement: Main function based design with controlled execution
+if (require.main === module) {
+    main();
+}

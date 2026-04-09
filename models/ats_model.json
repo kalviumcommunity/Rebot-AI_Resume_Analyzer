@@ -1,0 +1,12 @@
+{
+  "version": "v1.0",
+  "type": "WeightedScoringEngine",
+  "calibratedAt": "2026-04-09T09:36:36.923Z",
+  "weights": {
+    "keywordDensity": 40,
+    "actionVerbCount": 15,
+    "metricCount": 20,
+    "skillsCount": 15,
+    "experienceYears": 10
+  }
+}
