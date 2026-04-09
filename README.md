@@ -12,8 +12,6 @@ This project implements the end-to-end machine learning lifecycle:
 *   **Raw Data**: Resumes are received as unstructured or semi-structured JSON.
 *   **Preprocessing**: We lowercase text, remove special characters, and filter out common stop words to focus on meaningful technical signals.
 
-
-
 ### 2. Feature Engineering (`src/ml/features`)
 We transform raw text into a machine-readable feature vector:
 *   **Keyword Density**: Quantitative match against technical dictionaries (React, AWS, Node, etc.).
