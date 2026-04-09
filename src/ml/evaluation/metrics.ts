@@ -1,24 +1,30 @@
 import { predictAtsScore } from "../model/atsModel";
-import dataset from "../data/dataset.json";
+import dataset from "../data/raw/dataset.json";
 
 /**
  * ML Evaluation Metrics stage.
- * Used to measure the performance of the model against ground truth data.
+ * Measures model performance (MAE, Accuracy) against historical ground-truth data.
  */
 
 export interface EvaluationResult {
   accuracy: number;
   meanAbsoluteError: number;
-  baselineMAE: number; // Comparison point
+  baselineMAE: number;
   f1Score: number;
 }
 
+/**
+ * Calculates Mean Absolute Error between predicted and actual scores.
+ */
 export function calculateMAE(predictions: number[], actuals: number[]): number {
   if (predictions.length === 0 || predictions.length !== actuals.length) return -1;
   const sum = predictions.reduce((acc, pred, i) => acc + Math.abs(pred - actuals[i]), 0);
   return Number((sum / predictions.length).toFixed(2));
 }
 
+/**
+ * Calculates classification accuracy (Good vs Poor label).
+ */
 export function calculateAccuracy(labels: string[], actuals: string[]): number {
   if (labels.length === 0 || labels.length !== actuals.length) return -1;
   const correct = labels.filter((label, i) => label === actuals[i]).length;
@@ -26,8 +32,10 @@ export function calculateAccuracy(labels: string[], actuals: string[]): number {
 }
 
 /**
- * Runs evaluation on the historical ground-truth dataset.
- * Now benchmarks against a simple baseline.
+ * Benchmarks the current ML pipeline against the ground-truth dataset.
+ * Compares ML performance with a naive baseline.
+ * 
+ * @returns An object containing all evaluation metrics.
  */
 export function evaluateDataset(): EvaluationResult {
   const predictions: number[] = [];
@@ -54,12 +62,8 @@ export function evaluateDataset(): EvaluationResult {
 }
 
 /**
- * Returns the current evaluation report.
+ * Returns the latest system evaluation report.
  */
 export function getEvaluationReport(): EvaluationResult {
   return evaluateDataset();
 }
-
-
-
-
