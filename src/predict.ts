@@ -21,8 +21,18 @@ export interface PredictionResult {
 }
 
 /**
+ * Helper to catalyze continuous scores into discrete classification labels.
+ * Good (>=80), Average (50-79), Poor (<50)
+ */
+function getPredictionLabel(score: number): string {
+    if (score >= 80) return "Good";
+    if (score >= 50) return "Average";
+    return "Poor";
+}
+
+/**
  * Executes a single inference on provided resume data.
- * Adheres to Traceable Pipeline: Source -> Features -> Loaded Model -> Score.
+ * Adheres to Hybrid System: Regression (Score) + Classification (Label).
  */
 export function predictAtsScore(data: Partial<ResumeData>): PredictionResult {
     const model = loadModel();
@@ -34,7 +44,7 @@ export function predictAtsScore(data: Partial<ResumeData>): PredictionResult {
     const weights = model.weights;
     const baselineScore = Math.round(features.keywordDensity * 100);
     
-    // Weighted Sum
+    // Weighted Sum (Regression Stage)
     const kwScore = (features.keywordDensity * 100) * (weights.keywordDensity / 100);
     const verbScore = (Math.min(features.actionVerbCount, 10) / 10) * weights.actionVerbCount;
     const metricScore = (Math.min(features.metricCount, 5) / 5) * weights.metricCount;
@@ -56,7 +66,7 @@ export function predictAtsScore(data: Partial<ResumeData>): PredictionResult {
     return {
         score: finalScore,
         baselineScore: baselineScore,
-        label: finalScore >= 70 ? "Good" : "Poor",
+        label: getPredictionLabel(finalScore), // Classification Layer
         confidence: 0.92,
         version: model.version,
         features,

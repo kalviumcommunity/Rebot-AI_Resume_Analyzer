@@ -4,15 +4,22 @@ Rebot is a professional AI-powered resume analyzer and builder that integrates a
 
 ---
 
-## 🏗️ ML Lifecycle & Separation (Milestone 5.12)
+## 🏗️ Hybrid ML System (Milestone 5.12 & 5.13)
 
-Rebot enforces a strict architectural boundary between Training and Prediction to ensure model reproducibility and runtime stability.
+Rebot operates as a **Hybrid Supervised Learning System**, combining Regression and Classification to maximize both precision and interpretability.
 
-### 🔄 Training Pipeline
-`Raw Data (data_loader.ts)` → `Preprocessing` → `Features` → `Fitting (train.ts)` → `Artifact Persistence (persistence.ts)`
+---
 
-### 🚀 Prediction Pipeline (Inference)
-`Input` → `Load Artifacts (persistence.ts)` → `Transform` → `Inference (predict.ts)`
+### 📈 Problem Type: Regression
+- **Definition**: The core of the system is a regression problem because it predicts a continuous numerical value (ATS Score 0-100).
+- **Metric**: Measured via **Mean Absolute Error (MAE)**.
+
+### 🏷️ Problem Type: Classification
+- **Definition**: To improve user interpretability, we add a classification layer that categorizes the output into discrete quality bins:
+    - **Good** (Score ≥ 80)
+    - **Average** (50–79)
+    - **Poor** (< 50)
+- **Metric**: Measured via **Multi-Class Accuracy**.
 
 ---
 
@@ -20,6 +27,11 @@ Rebot enforces a strict architectural boundary between Training and Prediction t
 - **Fit vs. Transform Separation**: Preprocessing parameters are only learned during the Training phase (`fit`). The Prediction phase uses these parameters exactly as-is (`transform`).
 - **Inference Purity**: The `predict.ts` module is architecturally forbidden from retraining or modifying model weights.
 - **Artifact Immutability**: Production inference strictly consumes persisted JSON artifacts, preventing "drift" between experiments and serving.
+
+---
+
+## 🧑💼 Selection-Level Interview Answer (CRITICAL)
+> "My Rebot implementation is primarily a **regression problem** since its main goal is to predict a continuous ATS score. However, I’ve incorporated a **classification layer** to categorize resumes into Good, Average, and Poor segments. This hybrid approach ensures both high-resolution precision for the backend audit and clear interpretability for the end user."
 
 ---
 
