@@ -1,18 +1,17 @@
 /**
- * Kalvium Milestone 5.8: Main Orchestration
+ * Kalvium Milestone 5.11: Root Orchestrator
  * Responsibility: Executing the full end-to-end ML Pipeline.
  */
-import { trainMain } from "./train";
-import { evalMain } from "./evaluate";
-import { predictAtsScore } from "./predict";
-import { predictBaselineScore } from "./baseline";
+import { trainMain } from "./src/train";
+import { evalMain } from "./src/evaluate";
+import { predictAtsScore } from "./src/predict";
 
 /**
  * End-to-End Orchestrator.
  * Follows the precise data flow: Train -> Save -> Load -> Evaluate -> Predict.
  */
 function main() {
-    console.log("🚀 TRIGGERING FULL SYSTEM ORCHESTRATION");
+    console.log("🚀 TRIGGERING FULL SYSTEM ORCHESTRATION (Milestone 5.11)");
     console.log("------------------------------------------");
 
     // 1. Training (Fitting)
@@ -31,12 +30,8 @@ function main() {
     } as any;
     
     const result = predictAtsScore(sample);
-    const baseline = predictBaselineScore(sample);
-
     console.log(`\nSample Results:`);
     console.log(`- ML ATS Score:   ${result.score} (${result.label})`);
-    console.log(`- Baseline Score: ${baseline}`);
-    console.log(`- ML Improvement: ${result.score - baseline} pts`);
     console.log("------------------------------------------");
     console.log("🚀 ORCHESTRATION COMPLETE");
 }
