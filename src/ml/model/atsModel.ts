@@ -2,19 +2,25 @@ import { ResumeFeatures } from "../features/extractor";
 
 export interface PredictionResult {
   score: number;
+  baselineScore: number; // Naive keyword count comparison
   label: "Good" | "Poor";
   confidence: number;
+  version: string;       // Model versioning
   featureContributions: {
     name: string;
     contribution: number;
+    impact: "positive" | "negative" | "neutral";
   }[];
 }
 
 /**
- * Supervised Learning Model (Weighted Scoring).
+ * Supervised Learning Model v1.0 (Weighted Scoring).
  * This simulates a Linear Regression model mapping features to a calibrated ATS score.
+ * It also calculates a 'Baseline' score (simple keyword match) to prove ML value.
  */
 export function predictAtsScore(features: ResumeFeatures): PredictionResult {
+  const version = "v1.0";
+
   // Model Weights (Learned parameters representation)
   const weights = {
     keywordDensity: 40,    // High impact
@@ -23,6 +29,10 @@ export function predictAtsScore(features: ResumeFeatures): PredictionResult {
     skillsCount: 15,       // Moderate
     experienceYears: 10,   // Low-moderate
   };
+
+  // 0. Baseline Calculation (Naive Keyword Match)
+  // A standard ATS usually just looks at keywords.
+  const baselineScore = Math.round(features.keywordDensity * 100);
 
   // Base Scatters
   let rawScore = 0;
@@ -45,21 +55,34 @@ export function predictAtsScore(features: ResumeFeatures): PredictionResult {
   rawScore = kwContrib + verbContrib + metricContrib + skillContrib + expContrib;
 
   // Penalties (Monitoring stage signals)
-  if (features.resumeLength < 100) rawScore *= 0.7; // Too short
-  if (!features.hasContactInfo) rawScore -= 10;    // Missing contact
+  let lengthPenalty = 0;
+  let contactPenalty = 0;
+
+  if (features.resumeLength < 100) {
+    lengthPenalty = -15; // Too short penalty
+    rawScore += lengthPenalty;
+  }
+  if (!features.hasContactInfo) {
+    contactPenalty = -10; // Missing contact penalty
+    rawScore += contactPenalty;
+  }
 
   const finalScore = Math.max(0, Math.min(100, Math.round(rawScore)));
 
   return {
     score: finalScore,
+    baselineScore: baselineScore,
     label: finalScore >= 70 ? "Good" : "Poor",
-    confidence: 0.92, // Simulated model confidence
+    confidence: 0.92,
+    version,
     featureContributions: [
-      { name: "Keywords", contribution: Math.round(kwContrib) },
-      { name: "Action Verbs", contribution: Math.round(verbContrib) },
-      { name: "Quantifiable Metrics", contribution: Math.round(metricContrib) },
-      { name: "Skills Breadth", contribution: Math.round(skillContrib) },
-      { name: "Experience Seniority", contribution: Math.round(expContrib) }
+      { name: "Keywords", contribution: Math.round(kwContrib), impact: "positive" },
+      { name: "Action Verbs", contribution: Math.round(verbContrib), impact: "positive" },
+      { name: "Quantifiable Metrics", contribution: Math.round(metricContrib), impact: "positive" },
+      { name: "Skills Breadth", contribution: Math.round(skillContrib), impact: "positive" },
+      { name: "Experience Seniority", contribution: Math.round(expContrib), impact: "positive" },
+      ...(lengthPenalty !== 0 ? [{ name: "Length Penalty", contribution: lengthPenalty, impact: "negative" as const }] : []),
+      ...(contactPenalty !== 0 ? [{ name: "Missing Info Penalty", contribution: contactPenalty, impact: "negative" as const }] : [])
     ]
   };
 }

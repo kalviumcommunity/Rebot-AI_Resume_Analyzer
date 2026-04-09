@@ -31,9 +31,11 @@ interface ResumePreviewProps {
 interface MlResult {
   prediction: {
     score: number;
+    baselineScore: number;
     label: string;
     confidence: number;
-    featureContributions: { name: string; contribution: number }[];
+    version: string;
+    featureContributions: { name: string; contribution: number; impact: "positive" | "negative" | "neutral" }[];
   };
   features: {
     keywordDensity: number;
@@ -45,6 +47,7 @@ interface MlResult {
   evaluation: {
     accuracy: number;
     meanAbsoluteError: number;
+    baselineMAE: number;
   };
 }
 
