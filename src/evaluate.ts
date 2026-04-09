@@ -34,7 +34,13 @@ export function getEvaluationReport() {
         totalAbsoluteError += Math.abs(prediction.score - item.actualScore);
         totalBaselineError += Math.abs(baseline - item.actualScore);
         
-        if (prediction.label === item.label) correctLabels++;
+        // Multi-Class Accuracy Stage (Hybrid Evaluation)
+        // We calculate what the correct label SHOULD be based on the ground truth score
+        let groundTruthLabel = "Poor";
+        if (item.actualScore >= 80) groundTruthLabel = "Good";
+        else if (item.actualScore >= 50) groundTruthLabel = "Average";
+
+        if (prediction.label === groundTruthLabel) correctLabels++;
     });
 
     const mae = totalAbsoluteError / dataset.length;
