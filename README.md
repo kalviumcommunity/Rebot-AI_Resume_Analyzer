@@ -39,23 +39,10 @@ In Rebot, the choice of features is more important than the algorithm. A raw key
 
 ---
 
-## 📂 Project Structure
-
-```text
-/src
- ├── ml/
- │    ├── data/         # Ground truth datasets & CSVs
- │    ├── features/     # Feature Engineering logic
- │    ├── model/        # Predictors & weights
- │    ├── evaluation/   # Performance metrics (MAE, Accuracy)
- │    └── utils/        # Preprocessing & cleaning
- ├── app/api/ats-score/ # Backend ML Inference endpoint
- └── components/ml/     # UI Intelligence Reports
-```
 
 ---
 
-## ⚠️ Pipeline Failure Example: Data Quality
+##  Pipeline Failure Example: Data Quality
 If a resume uses excessive formatting or non-standard characters, the **Cleaning Stage** might fail to extract words correctly. This leads to a zero-vector in **Feature Engineering**, causing the **Model** to predict a poor score even for a high-quality candidate. This demonstrates why the quality of the data cleaning stage is foundational to the entire system.
 
 ---
