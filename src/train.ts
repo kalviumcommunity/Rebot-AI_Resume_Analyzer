@@ -1,12 +1,12 @@
 import fs from "fs";
-import { CONFIG } from "./config";
+import { CONFIG, TARGET, ALL_FEATURES } from "./config";
 import { saveModel } from "./persistence";
 import { getEvaluationReport } from "./evaluate";
 import { loadData } from "./data_loader";
 
 /**
  * Orchestrates the Training stage of the ML Lifecycle.
- * Adheres to 5.12: Separation of Loading, Fitting, and Persistence.
+ * Adheres to 5.14: Explicit X/y Separation and Leakage Detection.
  */
 function main() {
     console.log("==========================================");
@@ -14,12 +14,23 @@ function main() {
     console.log("==========================================\n");
 
     try {
-        // 1. Data Loading (Separated Layer)
+        // 1. Data Loading 
         console.log("[STAGE 1] Loading Raw Data...");
         const data = loadData(CONFIG.DATA_PATH);
-        console.log(`[STAGE 1] Successfully loaded ${data.length} records.`);
+        
+        // 2. Feature & Target Separation (Milestone 5.14)
+        console.log("[STAGE 2] Separating Features (X) and Target (y)...");
+        const X = ALL_FEATURES; // Features list from config
+        const y = TARGET;       // Target definition from config
 
-        // 2. Model Fitting (In-memory logic)
+        // 3. Strict Data Leakage Validation
+        console.log("[STAGE 3] Validating Feature Integrity (No Leakage)...");
+        if (X.includes(y)) {
+            throw new Error(`CRITICAL ERROR: Data Leakage Detected! Target '${y}' is present in the feature list.`);
+        }
+        console.log(`[STAGE 3] Validation Passed: ${X.length} features, 0 leakage.`);
+
+        // 4. Model Fitting 
         // In this supervised simulation, we "Train" by establishing 
         // a calibrated weighted model for inference.
         const model = {
@@ -29,7 +40,7 @@ function main() {
             weights: CONFIG.WEIGHTS,
         };
 
-        console.log("[STAGE 2] Fitting model to configuration...");
+        console.log("[STAGE 4] Fitting model to configuration...");
         saveModel(model);
 
         // 2. Generate Evaluation Report (Milestone 5.11)
