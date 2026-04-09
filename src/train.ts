@@ -5,10 +5,11 @@ import { getEvaluationReport } from "./evaluate";
 import { loadData } from "./data_loader";
 import { extractResumeFeatures } from "./feature_engineering";
 import { analyzeFeatures } from "./feature_analysis";
+import { trainTestSplit } from "./split";
 
 /**
  * Orchestrates the Training stage of the ML Lifecycle.
- * Adheres to 5.15: Feature Distribution Inspection & Analysis.
+ * Adheres to 5.16: Train-Test Split & Evaluation Purity.
  */
 function main() {
     console.log("==========================================");
@@ -18,30 +19,32 @@ function main() {
     try {
         // 1. Data Loading 
         console.log("[STAGE 1] Loading Raw Data...");
-        const data = loadData(CONFIG.DATA_PATH);
+        const rawData = loadData(CONFIG.DATA_PATH);
         
-        // 2. Feature Extraction (For Analysis)
-        console.log("[STAGE 2] Extracting Features for Dataset Audit...");
-        const featuresArray = data.map((item: any) => extractResumeFeatures(item));
+        // 2. Train-Test Split (Milestone 5.16)
+        console.log("[STAGE 2] Performing Train-Test Split (80/20)...");
+        const { train, test } = trainTestSplit(rawData, 0.2, CONFIG.RANDOM_SEED);
 
-        // 3. Feature Distribution Inspection (Milestone 5.15)
-        analyzeFeatures(featuresArray);
+        // 3. Feature Extraction & Analysis (Training Set ONLY)
+        console.log("[STAGE 3] Extracting Features for Training Set Audit...");
+        const trainFeatures = train.map((item: any) => extractResumeFeatures(item));
 
-        // 4. Feature & Target Separation (Milestone 5.14)
-        console.log("[STAGE 3] Separating Features (X) and Target (y)...");
-        const X = ALL_FEATURES; // Features list from config
-        const y = TARGET;       // Target definition from config
+        // 4. Feature Distribution Inspection (Milestone 5.15)
+        analyzeFeatures(trainFeatures);
 
-        // 3. Strict Data Leakage Validation
-        console.log("[STAGE 3] Validating Feature Integrity (No Leakage)...");
+        // 5. Feature & Target Separation (Milestone 5.14)
+        console.log("[STAGE 4] Separating Features (X) and Target (y)...");
+        const X = ALL_FEATURES; 
+        const y = TARGET;       
+
+        // 6. Strict Data Leakage Validation
+        console.log("[STAGE 5] Validating Feature Integrity (No Leakage)...");
         if (X.includes(y)) {
             throw new Error(`CRITICAL ERROR: Data Leakage Detected! Target '${y}' is present in the feature list.`);
         }
-        console.log(`[STAGE 3] Validation Passed: ${X.length} features, 0 leakage.`);
+        console.log(`[STAGE 5] Validation Passed: ${X.length} features, 0 leakage.`);
 
-        // 4. Model Fitting 
-        // In this supervised simulation, we "Train" by establishing 
-        // a calibrated weighted model for inference.
+        // 7. Model Fitting 
         const model = {
             version: CONFIG.MODEL_VERSION,
             type: "WeightedScoringEngine",
@@ -49,12 +52,12 @@ function main() {
             weights: CONFIG.WEIGHTS,
         };
 
-        console.log("[STAGE 4] Fitting model to configuration...");
+        console.log("[STAGE 6] Fitting model to configuration...");
         saveModel(model);
 
-        // 2. Generate Evaluation Report (Milestone 5.11)
-        console.log("Generating Evaluation Report...");
-        const report = getEvaluationReport();
+        // 8. Generate Evaluation Report (Milestone 5.16 - On Test Set Only)
+        console.log("Generating Evaluation Report (Reserved Test Set)...");
+        const report = getEvaluationReport(test);
         if (!fs.existsSync("reports")) fs.mkdirSync("reports");
         fs.writeFileSync("reports/evaluation_report.json", JSON.stringify({
             model_version: CONFIG.MODEL_VERSION,
