@@ -58,6 +58,29 @@ Standard ATS systems often use naive keyword matching. Rebot improves on this:
 
 ---
 
+## 🧠 ML Engineering Pipeline
+
+This project implements a professional, industry-grade ML pipeline following the **Modular System Design** pattern. The system is split into two implementations:
+- **Production Pipeline**: Built in TypeScript for real-time web inference.
+- **Audit/Scripting Pipeline**: Built in Python for curricular compliance and batch auditing.
+
+### 🏗️ Data Flow Trace
+`Raw Data` → `Preprocessing` → `Feature Engineering` → `Model Training` → `Evaluation` → `Prediction`
+
+### 📦 Key Modules
+- **Data Preprocessing** (`src/ml/data_preprocessing.ts`): Handles text normalization and cleaning.
+- **Feature Engineering** (`src/ml/feature_engineering.ts`): Extracts signals like keyword density and action verbs.
+- **Training** (`src/ml/train.ts`): Simulates the model fitting stage and persists weights to `models/ats_model.json`.
+- **Evaluation** (`src/ml/evaluate.ts`): Audits model performance (MAE, Accuracy) against historical ground truth.
+- **Prediction** (`src/ml/predict.ts`): Orchestrates real-time inference using loaded model artifacts.
+
+### 🧪 Reproducibility & Environment
+- **Virtual Environment**: Isolated environment for ML auditing scripts.
+- **Requirements**: Pinned dependencies in `requirements.txt`.
+- **Config Driven**: Centralized hyperparameters and seeds in `src/ml/config.ts`.
+
+---
+
 ## 🛠️ Getting Started
 1. Install dependencies: `npm install`
 2. Run development server: `npm run dev`
