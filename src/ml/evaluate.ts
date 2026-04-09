@@ -5,6 +5,7 @@
 import fs from "fs";
 import { CONFIG } from "./config";
 import { predictAtsScore } from "./predict";
+import { predictBaselineScore } from "./baseline";
 
 /**
  * Loads the ground truth resumes from 'data/raw/resumes.json'.
@@ -17,65 +18,65 @@ function loadDataset() {
 }
 
 /**
- * Evaluation Runner for CLI.
- * Prints detailed metrics: MAE, F1, and Accuracy.
- */
-function main() {
-    console.log("==========================================");
-    console.log("   ML PIPELINE: EVALUATION STAGE (v1.0)   ");
-    console.log("==========================================\n");
-
-    try {
-        const dataset = loadDataset();
-        let totalAbsoluteError = 0;
-        let correctLabels = 0;
-
-        dataset.forEach((item: any) => {
-            const prediction = predictAtsScore(item.features as any);
-            
-            const error = Math.abs(prediction.score - item.actualScore);
-            totalAbsoluteError += error;
-
-            if (prediction.label === item.label) {
-                correctLabels++;
-            }
-        });
-
-        const mae = totalAbsoluteError / dataset.length;
-        const accuracy = correctLabels / dataset.length;
-
-        console.log(`Dataset Size:      ${dataset.length} samples`);
-        console.log(`Mean Absolute Err: ${mae.toFixed(2)} pts`);
-        console.log(`Accuracy:          ${(accuracy * 100).toFixed(2)}%`);
-        console.log(`Reliability:       ${accuracy >= 0.8 ? "HIGH" : "CALIBRATION NEEDED"}`);
-
-        console.log("\n==========================================\n");
-    } catch (error) {
-        console.error("Evaluation failed:", error);
-        process.exit(1);
-    }
-}
-
-/**
  * Returns the latest system evaluation report.
+ * Benchmarks the ML model against a naive baseline to calculate 'Performance Gap'.
  */
 export function getEvaluationReport() {
     const dataset = loadDataset();
     let totalAbsoluteError = 0;
+    let totalBaselineError = 0;
     let correctLabels = 0;
 
     dataset.forEach((item: any) => {
         const prediction = predictAtsScore(item.features as any);
-        const error = Math.abs(prediction.score - item.actualScore);
-        totalAbsoluteError += error;
+        const baseline = predictBaselineScore(item.features as any);
+        
+        totalAbsoluteError += Math.abs(prediction.score - item.actualScore);
+        totalBaselineError += Math.abs(baseline - item.actualScore);
+        
         if (prediction.label === item.label) correctLabels++;
     });
 
+    const mae = totalAbsoluteError / dataset.length;
+    const bMae = totalBaselineError / dataset.length;
+
     return {
         accuracy: correctLabels / dataset.length,
-        meanAbsoluteError: totalAbsoluteError / dataset.length,
-        baselineMAE: 12.5 // Simulated historical baseline
+        meanAbsoluteError: mae,
+        baselineMAE: bMae,
+        maeReduction: bMae - mae
     };
+}
+
+/**
+ * Evaluation Runner for CLI.
+ * Prints detailed metrics: MAE, Baseline comparison, and MAE Reduction.
+ */
+function main() {
+    console.log("==========================================");
+    console.log(`   ML PIPELINE: EVALUATION STAGE (${CONFIG.MODEL_VERSION})  `);
+    console.log("==========================================\n");
+
+    try {
+        const report = getEvaluationReport();
+
+        console.log(`Dataset Size:      ${loadDataset().length} samples`);
+        console.log(`ML Model MAE:      ${report.meanAbsoluteError.toFixed(2)} pts`);
+        console.log(`Baseline MAE:      ${report.baselineMAE.toFixed(2)} pts`);
+        console.log(`MAE Reduction:     ${report.maeReduction.toFixed(2)} pts (Lower is better)`);
+        console.log(`Accuracy:          ${(report.accuracy * 100).toFixed(2)}%`);
+
+        console.log("\n------------------------------------------");
+        if (report.accuracy >= 0.8 && report.maeReduction > 5) {
+            console.log("STATUS: SUCCESS - ML Model significantly outperforms baseline.");
+        } else {
+            console.log("STATUS: CAUTION - Model performance gap is small.");
+        }
+        console.log("==========================================\n");
+    } catch (error) {
+        console.error("Evaluation failed:", error);
+        process.exit(1);
+    }
 }
 
 // Entry point enforcement

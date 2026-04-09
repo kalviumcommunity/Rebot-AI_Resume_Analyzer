@@ -40,4 +40,11 @@ export const CONFIG = {
   },
 
   GOOD_SCORE_THRESHOLD: 70,
+
+  // Calibration Penalties
+  PENALTIES: {
+    MIN_LENGTH: 100,
+    LENGTH_PENALTY: -15,
+    MISSING_CONTACT_PENALTY: -10,
+  }
 };

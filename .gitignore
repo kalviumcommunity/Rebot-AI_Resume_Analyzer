@@ -42,7 +42,10 @@ next-env.d.ts
 
 .env.local
 
-# ML Data
+# ML Environment
+venv/
+__pycache__/
+*.pyc
 
 
 
