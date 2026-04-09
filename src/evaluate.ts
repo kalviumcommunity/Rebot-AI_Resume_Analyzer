@@ -19,10 +19,14 @@ function loadDataset() {
 
 /**
  * Returns the latest system evaluation report.
- * Benchmarks the ML model against a naive baseline to calculate 'Performance Gap'.
+ * Benchmarks the ML model against a naive baseline on the provided dataset.
+ * 
+ * @param testDataset - The subset of data Reserved for testing (Milestone 5.16)
  */
-export function getEvaluationReport() {
-    const dataset = loadDataset();
+export function getEvaluationReport(testDataset?: any[]) {
+    // If no dataset provided (legacy support), load full set
+    const dataset = testDataset || loadDataset();
+    
     let totalAbsoluteError = 0;
     let totalBaselineError = 0;
     let correctLabels = 0;

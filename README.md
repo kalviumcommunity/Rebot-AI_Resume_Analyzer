@@ -42,6 +42,17 @@ The following columns are formally excluded to prevent overfitting or logical ci
 - **Zero Target Leakage**: The `ats_score` (Target) is strictly separated from the input Feature matrix (`X`). Programmatic checks in `train.ts` prevent accidental overlap.
 - **Fit vs. Transform Isolation**: Preprocessing parameters are learned once during training and reused identically during inference.
 - **Inference Purity**: The `predict.ts` module is architecturally read-only.
+- **Preprocessing Timing**: Preprocessing (feature extraction) is applied **after splitting** to ensure no information from the test set leaks into the training statistics.
+
+---
+
+## ✂️ Data Splitting Strategy (Milestone 5.16)
+To ensure honest evaluation and measure generalization to unseen data, Rebot employs a strict train-test split:
+
+- **Split Ratio**: 80% Training / 20% Testing.
+- **Randomization**: A stable shuffle with `random_state = 42` ensures reproducible splits.
+- **Evaluation Purity**: The test set is completely withheld during the training phase. Evaluation metrics (MAE, Accuracy) are calculated **only on reserved test data**.
+- **Verification**: Pipeline logs output exact sample counts (e.g., `Training Set: 21 samples`, `Testing Set: 6 samples`) for auditing.
 
 ---
 
