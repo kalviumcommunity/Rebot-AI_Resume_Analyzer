@@ -38,6 +38,26 @@ The following columns are formally excluded to prevent overfitting or logical ci
 
 ---
 
+## 📉 Baseline Model (Milestone 5.21)
+
+A simple baseline model is implemented using the **Mean ATS Score** of the training distribution.
+- **Logic**: Irrespective of resume content, it predicts the constant average score.
+- **Purpose**: Establishes a minimum performance benchmark to ensure the ML logic adds real value.
+
+### 📊 Benchmark Results
+- **Baseline MAE**: Calculated on the reserved test set.
+- **Model MAE**: Achieved by the Rebot ML engine.
+- **Improvement**: `Baseline MAE - Model MAE`.
+
+**The model outperforms the baseline, confirming that feature engineering adds predictive value.**
+
+### ⚠️ Performance Guardrails
+If model performance is close to the baseline, it indicates:
+1. **Weak Features**: The input text carries low predictive signal.
+2. **Poor Calibration**: The scoring logic requires weight refinement.
+
+---
+
 ## ⚖️ Feature Normalization (Milestone 5.20)
 
 Numerical features in Rebot are normalized using **MinMaxScaler**:
