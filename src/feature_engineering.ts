@@ -14,6 +14,17 @@ export interface ResumeFeatures {
   skillsCount: number;         // Count of unique listed skills
   hasContactInfo: boolean;     // Essential info flag
   experienceYears: number;     // Simulation of seniority
+  seniorityLevel: string;      // Categorical Feature (Milestone 5.18)
+}
+
+/**
+ * Maps years of experience to a categorical level.
+ * (Milestone 5.18: Categorical Feature Logic)
+ */
+function getSeniorityLevel(years: number): string {
+    if (years >= 5) return "Senior";
+    if (years >= 2) return "Mid-Level";
+    return "Entry-Level";
 }
 
 /**
@@ -67,13 +78,14 @@ export function extractResumeFeatures(data: Partial<ResumeData>, target?: number
   const experienceYears = (data.experience?.length || 0) * 1.5;
 
   const features = {
-    keywordDensity,
-    actionVerbCount,
-    metricCount,
-    resumeLength: words.length,
-    skillsCount,
-    hasContactInfo,
-    experienceYears
+    keywordDensity: Number(keywordDensity),
+    actionVerbCount: Number(actionVerbCount),
+    metricCount: Number(metricCount),
+    resumeLength: Number(words.length),
+    skillsCount: Number(skillsCount),
+    hasContactInfo: Boolean(hasContactInfo),
+    experienceYears: Number(experienceYears),
+    seniorityLevel: getSeniorityLevel(experienceYears)
   };
 
   validateFeatures(features);
@@ -82,12 +94,22 @@ export function extractResumeFeatures(data: Partial<ResumeData>, target?: number
 
 /**
  * Validates that all extracted features are well-formed.
- * Prevents null/undefined values from contaminating the ML model.
+ * Prevents null/undefined/wrong types from contaminating the ML model.
  */
 export function validateFeatures(features: Record<string, any>) {
+  const numericalKeys = [
+    "keywordDensity", "actionVerbCount", "metricCount", 
+    "resumeLength", "skillsCount", "experienceYears"
+  ];
+
   for (const key in features) {
     if (features[key] === null || features[key] === undefined) {
       throw new Error(`[VALITDATION ERROR] Invalid feature detected: ${key} is ${features[key]}`);
+    }
+
+    // Numerical Type Enforcement (Milestone 5.18)
+    if (numericalKeys.includes(key) && typeof features[key] !== "number") {
+        throw new Error(`[VALITDATION ERROR] Type mismatch: Feature '${key}' must be numerical, found ${typeof features[key]}`);
     }
   }
 }

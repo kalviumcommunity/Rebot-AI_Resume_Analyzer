@@ -50,7 +50,7 @@ export const CONFIG = {
 };
 
 /**
- * Kalvium Milestone 5.14: Feature & Target Definitions
+ * Kalvium Milestone 5.14 & 5.18: Feature & Target Definitions
  */
 export const TARGET = "ats_score";
 
@@ -62,12 +62,19 @@ export const NUMERICAL_FEATURES = [
   "experienceYears"
 ];
 
-export const CATEGORICAL_FEATURES: string[] = [];
+export const CATEGORICAL_FEATURES = [
+  "seniorityLevel"
+];
 
 export const ALL_FEATURES = [
   ...NUMERICAL_FEATURES,
   ...CATEGORICAL_FEATURES
 ];
+
+// Structural Integrity Check (Milestone 5.18)
+if (NUMERICAL_FEATURES.includes(TARGET) || CATEGORICAL_FEATURES.includes(TARGET)) {
+  throw new Error("ARCHITECTURAL ERROR: Target variable cannot be listed as a predictive feature.");
+}
 
 /**
  * Columns formally excluded from the predictive model.
