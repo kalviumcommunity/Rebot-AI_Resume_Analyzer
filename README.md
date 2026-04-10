@@ -38,22 +38,28 @@ The following columns are formally excluded to prevent overfitting or logical ci
 
 ---
 
-## 📊 Classification Evaluation (Accuracy) (Milestone 5.26)
+## 🔬 Precision & Recall Evaluation (Milestone 5.27)
 
-Rebot's classification performance is rigorously evaluated using **Accuracy**, but with specific statistical guardrails to prevent misleading results.
+Accuracy alone is not sufficient for evaluating resume classification. Rebot uses a detailed per-class diagnostic suite to measure decision quality.
 
-### 📉 Results Comparison
-- **Baseline Accuracy**: X% (Majority-class naive guess)
-- **Model Accuracy**: Y% (Logistic Regression categorical prediction)
-- **Improvement**: +Z% over baseline
+### 📉 Core Concepts
+- **Precision**: Measures the quality of predictions. (How many resumes we labeled "Strong" are actually strong?)
+- **Recall**: Measures the coverage of detection. (How many actual "Strong" resumes did we correctly identify?)
+- **F1 Score**: The harmonic mean balancing both precision and recall.
 
 ### 📐 Statistical Integrity
-- **Baseline Benchmarking**: **Accuracy is compared against a majority-class baseline to ensure the model is not biased.** This ensures we aren't "faking" accuracy by simply predicting the most common category.
-- **Confusion Matrix**: We use a 3x3 matrix to visualize class-wise precision, distinguishing between correctly identified "Strong" resumes and misclassified "Average" ones.
-- **Balanced Accuracy**: We average recall across all three classes to ensure the model performs fairly across the entire quality spectrum, regardless of class imbalance.
+- **Baseline Comparison**: We benchmark our per-class metrics against a majority-class baseline to prove the model's predictive superiority.
+- **Mandatory Logic**: **Precision measures correctness of predictions, while Recall measures completeness of detection.**
 
 ### 🎯 Business Interpretation
-**An accuracy of 0.85 means the model correctly classifies 85 out of 100 resumes.** This high-level metric provides immediate confidence to human recruiters reviewing the system's categorical labels.
+**High recall ensures that strong resumes are not missed, while high precision ensures only qualified resumes are recommended.** This dual-layered validation ensures Rebot provides a reliable and comprehensive talent assessment tool for recruiters.
+
+---
+
+## 🎤 Interview Readiness (Milestone 5.27)
+
+**Q: How did you evaluate your classification model?**
+> "Accuracy alone was not sufficient, so I used Precision and Recall to evaluate how well my model identifies strong resumes and avoids incorrect classifications. High recall ensures that strong resumes are not missed, while high precision ensures only qualified resumes are recommended."
 
 ---
 

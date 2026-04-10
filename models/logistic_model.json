@@ -1,13 +1,13 @@
 {
   "weights": {
-    "keywordDensity": 0.3778012996528415,
-    "actionVerbCount": 0.18679889905863367,
-    "metricCount": 0.3243392838091592,
-    "resumeLength": 0.168731730387361,
-    "skillsCount": 0.3801643966720484,
-    "hasContactInfo": 0.4344392592742635,
-    "experienceYears": 0.20116361840779828,
-    "seniorityLevel": 0.39906963444331767
+    "keywordDensity": 0.4764787684920797,
+    "actionVerbCount": 0.16443092046208352,
+    "metricCount": 0.4519934208789821,
+    "resumeLength": 0.42879905756871706,
+    "skillsCount": 0.1645300632494182,
+    "hasContactInfo": 0.37393273058353194,
+    "experienceYears": 0.20816633148742703,
+    "seniorityLevel": 0.3483138921933575
   },
   "bias": 0,
   "version": "v1.0-logistic"
