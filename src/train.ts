@@ -8,7 +8,8 @@ import { analyzeFeatures } from "./feature_analysis";
 import { trainTestSplit } from "./split";
 import { fitScaler, transformScaler } from "./ml/scaler";
 import { fitMinMaxScaler, transformMinMax } from "./ml/minmaxScaler";
-import { saveScaler, saveMinMax } from "./persistence";
+import { trainLinearModel } from "./ml/linearModel";
+import { saveScaler, saveMinMax, saveLinearModel } from "./persistence";
 
 /**
  * Orchestrates the Training stage of the ML Lifecycle.
@@ -56,7 +57,13 @@ function main() {
         console.log("[STAGE 4] Transforming Features (MinMax Calibration)...");
         const normalizedTrain = transformMinMax(scaledTrain, minmax);
 
-        // 7. Feature & Target Separation (Milestone 5.14)
+        // 7. Linear Model Training (Milestone 5.22)
+        console.log("[STAGE 5] Training Linear Regression Model (Pattern Discovery)...");
+        const targets = train.map((item: any) => item.actualScore || 70);
+        const linearModel = trainLinearModel(normalizedTrain, targets);
+        saveLinearModel(linearModel);
+
+        // 8. Feature & Target Separation (Milestone 5.14)
         const X = ALL_FEATURES; 
         const y = TARGET;       
 

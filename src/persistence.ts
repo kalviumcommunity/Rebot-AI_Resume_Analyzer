@@ -67,3 +67,23 @@ export function loadMinMax() {
     }
     return JSON.parse(fs.readFileSync(scalerPath, "utf-8"));
 }
+
+/**
+ * Saves the learned Linear Regression model.
+ */
+export function saveLinearModel(model: any) {
+    const modelPath = CONFIG.MODEL_PATH.replace("ats_model.json", "linear_model.json");
+    fs.writeFileSync(modelPath, JSON.stringify(model, null, 2));
+    console.log(`[PERSISTENCE] Linear Model artifact saved to: ${modelPath}`);
+}
+
+/**
+ * Loads the learned Linear Regression model for inference.
+ */
+export function loadLinearModel() {
+    const modelPath = CONFIG.MODEL_PATH.replace("ats_model.json", "linear_model.json");
+    if (!fs.existsSync(modelPath)) {
+        throw new Error(`Linear Model artifact missing at ${modelPath}. Run training first.`);
+    }
+    return JSON.parse(fs.readFileSync(modelPath, "utf-8"));
+}

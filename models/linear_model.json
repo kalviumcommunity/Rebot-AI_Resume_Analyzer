@@ -1,0 +1,14 @@
+{
+  "weights": {
+    "keywordDensity": -202.4,
+    "actionVerbCount": 92,
+    "metricCount": 92,
+    "resumeLength": -2.6285714285714286,
+    "skillsCount": -15.333333333333334,
+    "hasContactInfo": 92,
+    "experienceYears": -30.666666666666668,
+    "seniorityLevel": 92
+  },
+  "intercept": 0,
+  "version": "v1.0-learned"
+}

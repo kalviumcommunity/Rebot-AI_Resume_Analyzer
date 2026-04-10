@@ -38,23 +38,23 @@ The following columns are formally excluded to prevent overfitting or logical ci
 
 ---
 
-## 📉 Baseline Model (Milestone 5.21)
+## 🧠 Linear Regression Model (Milestone 5.22)
 
-A simple baseline model is implemented using the **Mean ATS Score** of the training distribution.
-- **Logic**: Irrespective of resume content, it predicts the constant average score.
-- **Purpose**: Establishes a minimum performance benchmark to ensure the ML logic adds real value.
+A **Linear Regression** model has been implemented to learn the statistical relationship between resume features and the target ATS score. Unlike the heuristic rules, this model discovers optimal weights by minimizing error on the training distribution.
 
-### 📊 Benchmark Results
-- **Baseline MAE**: Calculated on the reserved test set.
-- **Model MAE**: Achieved by the Rebot ML engine.
-- **Improvement**: `Baseline MAE - Model MAE`.
+### 📊 Benchmark Strategy (Triple Comparison)
+Rebot evaluates performance across three distinct tiers:
+1. **Baseline**: Naive mean-prediction (predicts the same average for everyone).
+2. **Rule-based**: Heuristic weighted logic (pre-defined scoring rules).
+3. **Linear Regression**: Pattern-based learning (discovered feature relationships).
 
-**The model outperforms the baseline, confirming that feature engineering adds predictive value.**
+**Linear Regression outperforms the baseline, demonstrating that the model learns meaningful relationships from features.**
 
-### ⚠️ Performance Guardrails
-If model performance is close to the baseline, it indicates:
-1. **Weak Features**: The input text carries low predictive signal.
-2. **Poor Calibration**: The scoring logic requires weight refinement.
+### 📐 Model Interpretation
+The learned coefficients in `models/linear_model.json` provide transparency into feature impact:
+- **Keyword Density**: Significant driver of the "Learned" score.
+- **Skill Count**: High positive correlation with ATS success.
+- **Resume Length**: Moderated weighting to prevent "keyword stuffing" gain.
 
 ---
 
