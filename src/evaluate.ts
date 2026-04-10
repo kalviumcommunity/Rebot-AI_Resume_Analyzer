@@ -18,6 +18,7 @@ import { extractResumeFeatures } from "./feature_engineering";
 import { trainTestSplit } from "./split";
 import { knnPredict, normalizeFeatures } from "./ml/knnModel";
 import { diagnoseBiasVariance, learningCurve } from "./ml/biasVariance";
+import { enhancedDecisionTree } from "./ml/decisionTree";
 
 /**
  * Loads the ground truth resumes from 'data/raw/resumes.json'.
@@ -76,10 +77,12 @@ export function getEvaluationReport(testDataset?: any[]) {
 
     const actualLabels: number[] = [];
     const logisticPreds: number[] = [];
+    const treePreds: number[] = [];
 
     // Training Set Predictions (for Bias-Variance)
     const trainActualLabels: number[] = [];
     const trainLogisticPreds: number[] = [];
+    const trainTreePreds: number[] = [];
 
     // KNN Preparation (Milestone 5.30)
     const trainFeaturesRaw = trainSet.map((item: any) => extractResumeFeatures(item));
@@ -89,7 +92,7 @@ export function getEvaluationReport(testDataset?: any[]) {
         if (score >= 75) l = 2;
         else if (score >= 50) l = 1;
 
-        // Populate training labels for LogReg check
+        // Populate training labels for model check
         trainActualLabels.push(l);
         return l;
     });
@@ -103,9 +106,10 @@ export function getEvaluationReport(testDataset?: any[]) {
     const trainFeatures = allFeaturesNormalized.slice(0, trainFeaturesRaw.length);
     const testFeatures = allFeaturesNormalized.slice(trainFeaturesRaw.length);
 
-    // Run Logistic Model on Train Set (Milestone 5.31)
+    // Run Logic on Train Set (Milestone 5.31-32)
     trainFeaturesRaw.forEach((f) => {
         trainLogisticPreds.push(predictLogistic(logisticModel, f));
+        trainTreePreds.push(enhancedDecisionTree(f));
     });
 
     const knnPreds: number[] = [];
@@ -136,6 +140,10 @@ export function getEvaluationReport(testDataset?: any[]) {
         // 4. KNN Prediction (Milestone 5.30)
         const kPred = knnPredict(trainFeatures, trainLabels, testFeatures[idx], 3);
         knnPreds.push(kPred);
+
+        // 5. Decision Tree Prediction (Milestone 5.32)
+        const tPred = enhancedDecisionTree(features);
+        treePreds.push(tPred);
         
         // Multi-Class Accuracy Stage (Hybrid Evaluation)
         let groundTruthLabel = "Poor";
@@ -153,12 +161,18 @@ export function getEvaluationReport(testDataset?: any[]) {
 
     const classificationDiag = evaluateClassification(actualLabels, logisticPreds, dataset);
     const knnAccuracy = calculateAccuracy(actualLabels, knnPreds);
+    const treeAccuracy = calculateAccuracy(actualLabels, treePreds);
 
     // Final Behavior Diagnosis (Milestone 5.31)
     const behavior = evaluateModelPerformance(
         trainLogisticPreds, trainActualLabels, 
         logisticPreds, actualLabels
     );
+
+    // Detailed Tree Gap (Milestone 5.32)
+    const treeTrainAcc = calculateAccuracy(trainActualLabels, trainTreePreds);
+    const treeTestAcc = calculateAccuracy(actualLabels, treePreds);
+    const treeGap = treeTrainAcc - treeTestAcc;
 
     return {
         accuracy: correctLabels / dataset.length,
@@ -171,7 +185,9 @@ export function getEvaluationReport(testDataset?: any[]) {
             improvement: classificationDiag.improvement,
             confusionMatrix: classificationDiag.matrix,
             balancedAccuracy: classificationDiag.balAcc,
-            knnAccuracy: knnAccuracy
+            knnAccuracy: knnAccuracy,
+            treeAccuracy: treeAccuracy,
+            treeGap: treeGap
         },
         behavior
     };
@@ -230,11 +246,13 @@ function main() {
         logModel("Linear Regression", report.linear);
 
         console.log("\n------------------------------------------");
-        console.log("   CLASSIFICATION EVALUATION (Milestone 5.25 - 5.31)");
+        console.log("   CLASSIFICATION EVALUATION (Milestone 5.25 - 5.32)");
         console.log(`   Baseline Accuracy: ${(report.classification.baselineAccuracy * 100).toFixed(2)}%`);
         console.log(`   Logistic Accuracy: ${(report.classification.modelAccuracy * 100).toFixed(2)}%`);
         console.log(`   KNN Accuracy:      ${(report.classification.knnAccuracy * 100).toFixed(2)}%`);
-        console.log(`   Improvement (Max): ${((Math.max(report.classification.modelAccuracy, report.classification.knnAccuracy) - report.classification.baselineAccuracy) * 100).toFixed(2)}%`);
+        console.log(`   Tree Accuracy:     ${(report.classification.treeAccuracy * 100).toFixed(2)}%`);
+        console.log(`   Tree Gap (Var):    ${(report.classification.treeGap * 100).toFixed(2)}%`);
+        console.log(`   Improvement (Max): ${((Math.max(report.classification.modelAccuracy, report.classification.knnAccuracy, report.classification.treeAccuracy) - report.classification.baselineAccuracy) * 100).toFixed(2)}%`);
         console.log(`   Balanced Accuracy: ${(report.classification.balancedAccuracy * 100).toFixed(2)}%`);
 
         learningCurve(
@@ -246,8 +264,8 @@ function main() {
         console.log("\n------------------------------------------");
         crossValidate(dataset);
         
-        if (report.linear.r2 > 0 && (report.classification.knnAccuracy >= report.classification.baselineAccuracy)) {
-            console.log("\n✅ SUCCESS: ML system is balanced and scientifically validated.");
+        if (report.linear.r2 > 0 && (report.classification.treeAccuracy >= report.classification.baselineAccuracy)) {
+            console.log("\n✅ SUCCESS: ML system is balanced and rule-interpretable.");
         } else {
             console.log("\n❌ CAUTION: System requires further complexity tuning.");
         }

@@ -211,6 +211,34 @@ The model performance is analyzed using training and testing metrics to ensure i
 
 ---
 
+## 🌳 Decision Tree Model (Milestone 5.32)
+
+The Decision Tree model classifies resumes using interpretable, rule-based logic.
+
+### 📈 How it works
+- **Feature Thresholds**: Uses IF-ELSE rules (e.g., `keywordScore > 75`) to split data into regions.
+- **Interpretable**: Predictions can be traced like a flowchart.
+- **Non-Linear**: Handles non-linear relationships without requiring feature scaling.
+
+**Decision Trees split data using feature thresholds to create rule-based predictions.**
+
+### 📐 Overfitting Control
+Decision Trees are prone to **High Variance**. Rebot implements a `prunedTree` logic that limits the depth of the rules, preventing the model from memorizing individual resumes and ensuring it generalizes to the broader pool of candidates.
+
+### 🎯 Feature Importance (Simulated)
+- **Keyword Score**: 50%
+- **Metrics**: 30%
+- **Action Verbs**: 20%
+
+---
+
+## 🎤 Interview Readiness (Milestone 5.32)
+
+**Q: Why would you use a Decision Tree for resume screening?**
+> "I used Decision Trees to create interpretable rule-based predictions where each resume is classified using transparent feature thresholds like keyword score and metrics. They are excellent for explainable AI because you can literally show a recruiter the yes/no decisions that led to a specific categorization."
+
+---
+
 ## 🧑💼 Selection-Level Interview Answer (CRITICAL)
 > "My Rebot implementation is primarily a **regression problem** since its main goal is to predict a continuous ATS score. However, I’ve incorporated a **classification layer** to categorize resumes into Good, Average, and Poor segments. This hybrid approach ensures both high-resolution precision for the backend audit and clear interpretability for the end user."
 
