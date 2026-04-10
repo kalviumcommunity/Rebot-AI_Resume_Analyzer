@@ -1,0 +1,18 @@
+{
+  "min": {
+    "keywordDensity": 0.45454545454545453,
+    "actionVerbCount": 0,
+    "metricCount": 0,
+    "resumeLength": 35,
+    "skillsCount": 6,
+    "experienceYears": 3
+  },
+  "max": {
+    "keywordDensity": 0.45454545454545453,
+    "actionVerbCount": 0,
+    "metricCount": 0,
+    "resumeLength": 35,
+    "skillsCount": 6,
+    "experienceYears": 3
+  }
+}

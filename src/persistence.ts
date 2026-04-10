@@ -47,3 +47,23 @@ export function loadScaler() {
     }
     return JSON.parse(fs.readFileSync(scalerPath, "utf-8"));
 }
+
+/**
+ * Saves the fitted MinMaxScaler artifact.
+ */
+export function saveMinMax(scaler: any) {
+    const scalerPath = CONFIG.MODEL_PATH.replace("ats_model.json", "minmax_scaler.json");
+    fs.writeFileSync(scalerPath, JSON.stringify(scaler, null, 2));
+    console.log(`[PERSISTENCE] MinMax Scaler artifact saved to: ${scalerPath}`);
+}
+
+/**
+ * Loads the fitted MinMaxScaler artifact for inference.
+ */
+export function loadMinMax() {
+    const scalerPath = CONFIG.MODEL_PATH.replace("ats_model.json", "minmax_scaler.json");
+    if (!fs.existsSync(scalerPath)) {
+        throw new Error(`MinMax Scaler artifact missing at ${scalerPath}. Run training first.`);
+    }
+    return JSON.parse(fs.readFileSync(scalerPath, "utf-8"));
+}
