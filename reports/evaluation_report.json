@@ -1,9 +1,10 @@
 {
   "model_version": "v1.0",
-  "timestamp": "2026-04-10T05:36:56.990Z",
+  "timestamp": "2026-04-10T05:49:09.314Z",
   "accuracy": 1,
-  "meanAbsoluteError": 35,
-  "baselineMAE": 0,
-  "linearMAE": 35,
-  "maeReduction": -35
+  "maeBaseline": 0,
+  "maeRule": 35,
+  "maeLinear": 191.83809523809524,
+  "improvementPercent": null,
+  "maePercentOfTarget": 548.1088435374149
 }

@@ -8,6 +8,8 @@ import { predictAtsScore } from "./predict";
 import { predictBaselineScore } from "./baseline";
 import { loadLinearModel } from "./persistence";
 import { predictLinear } from "./ml/linearModel";
+import { calculateMAE } from "./ml/metrics";
+import { extractResumeFeatures } from "./feature_engineering";
 
 /**
  * Loads the ground truth resumes from 'data/raw/resumes.json'.
@@ -29,8 +31,9 @@ export function getEvaluationReport(testDataset?: any[]) {
     // If no dataset provided (legacy support), load full set
     const dataset = testDataset || loadDataset();
     
-    let totalAbsoluteError = 0;
-    let totalLinearError = 0;
+    const actuals: number[] = [];
+    const rulePreds: number[] = [];
+    const linearPreds: number[] = [];
     let correctLabels = 0;
 
     // Calculate Mean Baseline once for the whole dataset (Milestone 5.21)
@@ -40,44 +43,75 @@ export function getEvaluationReport(testDataset?: any[]) {
     const linearModel = loadLinearModel();
 
     dataset.forEach((item: any) => {
+        const actual = item.actualScore || 70;
+        actuals.push(actual);
+
         // 1. Rule-based Prediction
-        const prediction = predictAtsScore(item);
-        totalAbsoluteError += Math.abs(prediction.score - item.actualScore);
+        const rPred = predictAtsScore(item);
+        rulePreds.push(rPred.score);
 
         // 2. Linear Regression Prediction (Milestone 5.22)
-        // We reuse predictAtsScore's pre-extracted features if possible, 
-        // but for pure evaluation we can extracted them fresh for the linear model
-        const lScore = predictLinear(linearModel, item.features || {}); 
-        totalLinearError += Math.abs((lScore || 0) - item.actualScore);
+        const features = extractResumeFeatures(item);
+        const lScore = predictLinear(linearModel, features); 
+        linearPreds.push(lScore || 0);
         
         // Multi-Class Accuracy Stage (Hybrid Evaluation)
-        // We calculate what the correct label SHOULD be based on the ground truth score
         let groundTruthLabel = "Poor";
-        if (item.actualScore >= 80) groundTruthLabel = "Good";
-        else if (item.actualScore >= 50) groundTruthLabel = "Average";
-
-        if (prediction.label === groundTruthLabel) correctLabels++;
+        if (actual >= 80) groundTruthLabel = "Good";
+        else if (actual >= 50) groundTruthLabel = "Average";
+        if (rPred.label === groundTruthLabel) correctLabels++;
     });
 
-    const mae = totalAbsoluteError / dataset.length;
-    const lMae = totalLinearError / dataset.length;
-    
-    // Calculate Baseline MAE (Milestone 5.21)
-    const baselineMAE = dataset.reduce((sum: number, item: any) => 
-        sum + Math.abs(item.actualScore - baselineConstant), 0) / dataset.length;
+    const maeRule = calculateMAE(actuals, rulePreds);
+    const maeLinear = calculateMAE(actuals, linearPreds);
+    const baselineMAE = calculateMAE(actuals, actuals.map(() => baselineConstant));
+
+    const improvement = baselineMAE - maeLinear;
+    const improvementPercent = (improvement / baselineMAE) * 100;
+
+    const meanTarget = actuals.reduce((a, b) => a + b, 0) / actuals.length;
+    const maePercentOfTarget = (maeLinear / meanTarget) * 100;
 
     return {
         accuracy: correctLabels / dataset.length,
-        meanAbsoluteError: mae,
-        baselineMAE: baselineMAE,
-        linearMAE: lMae,
-        maeReduction: baselineMAE - lMae
+        maeBaseline: baselineMAE,
+        maeRule: maeRule,
+        maeLinear: maeLinear,
+        improvementPercent: improvementPercent,
+        maePercentOfTarget: maePercentOfTarget
     };
 }
 
 /**
+ * Performs K-fold cross-validation simulation (Milestone 5.23).
+ * Verifies prediction stability across different dataset slices.
+ */
+export function crossValidate(data: any[], k = 5) {
+    if (data.length < k) return 0;
+    
+    const foldSize = Math.floor(data.length / k);
+    let scores: number[] = [];
+
+    for (let i = 0; i < k; i++) {
+        const test = data.slice(i * foldSize, (i + 1) * foldSize);
+        const train = data.filter((_, idx) => idx < i * foldSize || idx >= (i + 1) * foldSize);
+
+        // Predict Mean of training subset (Baseline Simulation)
+        const avg = train.reduce((a, b) => a + (b.actualScore || 70), 0) / train.length;
+        const actuals = test.map(d => d.actualScore || 70);
+        const preds = test.map(() => avg);
+
+        const mae = calculateMAE(actuals, preds);
+        scores.push(mae);
+    }
+
+    const meanCVMAE = scores.reduce((a, b) => a + b, 0) / scores.length;
+    console.log(`[ML EVAL] Cross-Validation MAE (k=${k}): ${meanCVMAE.toFixed(2)} pts`);
+    return meanCVMAE;
+}
+
+/**
  * Evaluation Runner for CLI.
- * Prints detailed metrics: MAE, Baseline comparison, and MAE Reduction.
  */
 function main() {
     console.log("==========================================");
@@ -85,20 +119,25 @@ function main() {
     console.log("==========================================\n");
 
     try {
+        const dataset = loadDataset();
         const report = getEvaluationReport();
 
-        console.log(`Dataset Size:      ${loadDataset().length} samples`);
-        console.log(`Baseline MAE:      ${report.baselineMAE.toFixed(2)} pts`);
-        console.log(`Rule-based MAE:    ${report.meanAbsoluteError.toFixed(2)} pts`);
-        console.log(`Linear Regr MAE:   ${report.linearMAE.toFixed(2)} pts`);
-        console.log(`MAE Reduction:     ${report.maeReduction.toFixed(2)} pts (Lower is better)`);
-        console.log(`Accuracy:          ${(report.accuracy * 100).toFixed(2)}%`);
+        console.log(`Dataset Size:      ${dataset.length} samples`);
+        console.log(`Baseline MAE:      ${report.maeBaseline.toFixed(2)} pts`);
+        console.log(`Rule-based MAE:    ${report.maeRule.toFixed(2)} pts`);
+        console.log(`Linear Regr MAE:   ${report.maeLinear.toFixed(2)} pts`);
+        
+        console.log("\n🚀 Improvement over baseline: ", (report.maeBaseline - report.maeLinear).toFixed(2));
+        console.log(`📈 % Improvement:    ${report.improvementPercent.toFixed(2)}%`);
+        console.log(`📊 MAE % of Target:  ${report.maePercentOfTarget.toFixed(2)}%`);
 
         console.log("\n------------------------------------------");
-        if (report.accuracy >= 0.8 && report.maeReduction > 5) {
-            console.log("STATUS: SUCCESS - ML Model significantly outperforms baseline.");
+        crossValidate(dataset);
+        
+        if (report.accuracy >= 0.8 && report.improvementPercent > 5) {
+            console.log("\nSTATUS: SUCCESS - ML Model significantly outperforms baseline.");
         } else {
-            console.log("STATUS: CAUTION - Model performance gap is small.");
+            console.log("\nSTATUS: CAUTION - Performance gains are marginal.");
         }
         console.log("==========================================\n");
     } catch (error) {

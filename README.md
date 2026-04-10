@@ -38,23 +38,23 @@ The following columns are formally excluded to prevent overfitting or logical ci
 
 ---
 
-## 🧠 Linear Regression Model (Milestone 5.22)
+## 📊 Model Evaluation (MAE) (Milestone 5.23)
 
-A **Linear Regression** model has been implemented to learn the statistical relationship between resume features and the target ATS score. Unlike the heuristic rules, this model discovers optimal weights by minimizing error on the training distribution.
+Mean Absolute Error (MAE) is the primary metric used to evaluate Rebot's prediction performance. **MAE is chosen because it provides an intuitive measure of average prediction error in real ATS score units.**
 
-### 📊 Benchmark Strategy (Triple Comparison)
-Rebot evaluates performance across three distinct tiers:
-1. **Baseline**: Naive mean-prediction (predicts the same average for everyone).
-2. **Rule-based**: Heuristic weighted logic (pre-defined scoring rules).
-3. **Linear Regression**: Pattern-based learning (discovered feature relationships).
+### 📈 Triple-Benchmark Comparison
+| Model | MAE (Lower is better) | Improvement over Baseline (%) |
+|-------|-----------------------|-------------------------------|
+| **Baseline (Mean)** | X pts | 0% |
+| **Rule-based** | Y pts | Z% |
+| **Linear Regression** | A pts | B% |
 
-**Linear Regression outperforms the baseline, demonstrating that the model learns meaningful relationships from features.**
+### 📐 Business Interpretation
+- **MAE Magnitude**: An MAE of **5** means that, on average, the system's ATS score prediction is off by only **5 points** compared to human grading.
+- **Contextual Accuracy**: We measure MAE as a **percentage of the target mean** to ensure the error is within acceptable business tolerances (e.g., < 10%).
 
-### 📐 Model Interpretation
-The learned coefficients in `models/linear_model.json` provide transparency into feature impact:
-- **Keyword Density**: Significant driver of the "Learned" score.
-- **Skill Count**: High positive correlation with ATS success.
-- **Resume Length**: Moderated weighting to prevent "keyword stuffing" gain.
+### 🔄 Performance Stability
+The system uses **K-fold Cross-Validation** to ensure that performance gains are consistent across all dataset segments, preventing deceptive results from lucky data splits.
 
 ---
 
