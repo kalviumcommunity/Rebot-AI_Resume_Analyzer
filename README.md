@@ -159,6 +159,30 @@ No log or scaling transformations were applied because:
 
 ---
 
+## 🧑🔬 K-Nearest Neighbors (KNN) Model (Milestone 5.30)
+
+KNN predicts resume category based on **similarity** with existing resumes rather than learned weights.
+
+### 📈 How it works
+- **Euclidean Distance**: Calculates the straight-line distance between feature sets.
+- **Majority Voting**: Selects $K$ nearest resumes ($K=3$ by default) and picks the most frequent category.
+- **Non-Parametric**: KNN is a non-parametric model that makes predictions based on similarity rather than learned weights.
+
+### 📐 Feature Scaling
+**Feature scaling is critical for KNN.** Without normalization, features with larger numerical ranges (like experience years vs keyword density) would dominate the distance calculation, leading to incorrect predictions. Rebot applies MinMax scaling locally before KNN processing.
+
+### 🎯 Business Interpretation
+KNN helps recommend resume quality based on similar past resumes, making predictions more interpretable for recruiters. If a resume is labeled "Strong," we can identify exactly which "Strong" resumes in our database it most resembles.
+
+---
+
+## 🎤 Interview Readiness (Milestone 5.30)
+
+**Q: Why did you add KNN when you already had Logistic Regression?**
+> "Unlike regression models which use learned weights, KNN predicts based on similarity between resumes. In the context of Rebot, this makes the logic highly interpretable and useful for recommendation-style insights, as we can point to similar high-quality resumes that justify the score."
+
+---
+
 ## 🧑💼 Selection-Level Interview Answer (CRITICAL)
 > "My Rebot implementation is primarily a **regression problem** since its main goal is to predict a continuous ATS score. However, I’ve incorporated a **classification layer** to categorize resumes into Good, Average, and Poor segments. This hybrid approach ensures both high-resolution precision for the backend audit and clear interpretability for the end user."
 
