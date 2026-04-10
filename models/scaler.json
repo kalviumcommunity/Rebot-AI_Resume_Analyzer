@@ -1,0 +1,18 @@
+{
+  "means": {
+    "keywordDensity": 0.45454545454545453,
+    "actionVerbCount": 0,
+    "metricCount": 0,
+    "resumeLength": 35,
+    "skillsCount": 6,
+    "experienceYears": 3
+  },
+  "stds": {
+    "keywordDensity": 1,
+    "actionVerbCount": 1,
+    "metricCount": 1,
+    "resumeLength": 1,
+    "skillsCount": 1,
+    "experienceYears": 1
+  }
+}

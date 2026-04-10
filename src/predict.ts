@@ -6,9 +6,11 @@
  * It NEVER calls saveModel(), trainMain(), or any fitting logic.
  */
 import { CONFIG } from "./config";
-import { extractResumeFeatures, ResumeFeatures } from "./feature_engineering";
+import { ResumeFeatures, extractResumeFeatures } from "./feature_engineering";
+import { predictBaselineScore } from "./baseline";
+import { loadModel, loadScaler } from "./persistence";
+import { transformScaler } from "./ml/scaler";
 import { ResumeData } from "@/types/resumeTypes";
-import { loadModel } from "./persistence";
 
 export interface PredictionResult {
     score: number;
@@ -35,12 +37,19 @@ function getPredictionLabel(score: number): string {
  * Adheres to Hybrid System: Regression (Score) + Classification (Label).
  */
 export function predictAtsScore(data: Partial<ResumeData>): PredictionResult {
-    const model = loadModel();
-    console.log(`[ML PIPELINE] Starting inference for version ${model.version}`);
+    // 1. Feature Extraction
     const features = extractResumeFeatures(data);
     console.log(`[ML PIPELINE] Features extracted: ${features.resumeLength} words, ${features.skillsCount} skills`);
 
-    // Scoring logic (using loaded model artifact)
+    // 2. Load Artifacts (Milestone 5.12 & 5.19)
+    const model = loadModel();
+    const scaler = loadScaler();
+    console.log(`[ML PIPELINE] Starting inference for version ${model.version}`);
+
+    // 3. Transformation (Milestone 5.19)
+    // Scale features before scoring (demonstration of preprocessing discipline)
+    const [scaled] = transformScaler([features], scaler);
+    
     const weights = model.weights;
     const baselineScore = Math.round(features.keywordDensity * 100);
     

@@ -32,8 +32,9 @@ export function getEvaluationReport(testDataset?: any[]) {
     let correctLabels = 0;
 
     dataset.forEach((item: any) => {
-        const prediction = predictAtsScore(item.features as any);
-        const baseline = predictBaselineScore(item.features as any);
+        // Pass the raw data object (Milestone 5.16+)
+        const prediction = predictAtsScore(item);
+        const baseline = predictBaselineScore(item);
         
         totalAbsoluteError += Math.abs(prediction.score - item.actualScore);
         totalBaselineError += Math.abs(baseline - item.actualScore);

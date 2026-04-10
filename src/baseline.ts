@@ -17,6 +17,7 @@ export function predictBaselineScore(data: Partial<ResumeData>): number {
         if (text.includes(kw)) keywordHits++;
     });
 
+    
     // Simple calculation: 10 points per keyword hit
     const score = Math.min(100, keywordHits * 10);
     return score;

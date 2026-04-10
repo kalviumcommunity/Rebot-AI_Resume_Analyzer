@@ -38,12 +38,17 @@ The following columns are formally excluded to prevent overfitting or logical ci
 
 ---
 
-### 🛡️ Data Leakage Prevention 
-- **Zero Target Leakage**: The `ats_score` (Target) is strictly separated from the input Feature matrix (`X`). Programmatic checks in `feature_engineering.ts` explicitly reject target variables to prevent "cheating."
-- **Fit vs. Transform Isolation**: Preprocessing parameters are learned once during training and reused identically during inference.
-- **Inference Purity**: The `predict.ts` module is architecturally read-only.
-- **Preprocessing Timing**: Preprocessing (feature extraction) is applied **after splitting** to ensure no information from the test set leaks into the training statistics.
-- **All features used in the model are available at prediction time.**
+## ⚖️ Feature Scaling (Milestone 5.19)
+
+Numerical features in Rebot are standardized using a **StandardScaler** approach (Z-Score normalization):
+- **Transformation**: Scaled Value = (x - mean) / standard deviation.
+- **Result**: Features are centered at Mean 0 with unit variance (Std 1).
+- **Leakage Prevention**: **Scaler is fitted only on training data to prevent data leakage.** The learned statistics (Mean/Std) are saved to `models/scaler.json` and reused exactly during inference.
+
+### 📐 Why Scaling is Optional
+The current Rebot engine uses weighted scoring, which is mathematically scale-invariant. However, scaling is implemented to:
+1. Demonstrate correct ML preprocessing discipline.
+2. Ensure future compatibility with distance-based or optimization-based algorithms (like SVM or Neural Networks).
 
 ---
 
