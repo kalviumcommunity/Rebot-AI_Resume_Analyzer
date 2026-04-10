@@ -19,9 +19,15 @@ export interface ResumeFeatures {
 /**
  * Orchestrates feature extraction from structured resume data.
  * @param data - The resume content object
+ * @param target - Optional target variable (Used ONLY to detect leakage)
  * @returns A feature vector (standardized object)
  */
-export function extractResumeFeatures(data: Partial<ResumeData>): ResumeFeatures {
+export function extractResumeFeatures(data: Partial<ResumeData>, target?: number): ResumeFeatures {
+  // 1. Target Leakage Prevention (Milestone 5.17)
+  if (target !== undefined) {
+    throw new Error("CRITICAL ERROR: Data Leakage Detected! Features must not depend on the target variable.");
+  }
+
   // Use pre-processing utility
   const fullText = JSON.stringify(data);
   const cleanedText = cleanRawText(fullText);
@@ -60,7 +66,7 @@ export function extractResumeFeatures(data: Partial<ResumeData>): ResumeFeatures
   // 6. Seniority Estimation
   const experienceYears = (data.experience?.length || 0) * 1.5;
 
-  return {
+  const features = {
     keywordDensity,
     actionVerbCount,
     metricCount,
@@ -69,4 +75,19 @@ export function extractResumeFeatures(data: Partial<ResumeData>): ResumeFeatures
     hasContactInfo,
     experienceYears
   };
+
+  validateFeatures(features);
+  return features;
+}
+
+/**
+ * Validates that all extracted features are well-formed.
+ * Prevents null/undefined values from contaminating the ML model.
+ */
+export function validateFeatures(features: Record<string, any>) {
+  for (const key in features) {
+    if (features[key] === null || features[key] === undefined) {
+      throw new Error(`[VALITDATION ERROR] Invalid feature detected: ${key} is ${features[key]}`);
+    }
+  }
 }

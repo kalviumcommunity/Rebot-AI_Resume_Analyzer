@@ -63,6 +63,11 @@ export function predictAtsScore(data: Partial<ResumeData>): PredictionResult {
 
     const finalScore = Math.max(0, Math.min(100, Math.round(totalScore)));
 
+    // Suspicious Score Check (Milestone 5.17)
+    if (totalScore > 100 || totalScore < 0) {
+        console.warn(`[ML MONITOR] Suspicious raw score detected: ${totalScore.toFixed(2)}. Normal range is 0-100. This may indicate feature leakage or improper calibration.`);
+    }
+
     return {
         score: finalScore,
         baselineScore: baselineScore,
