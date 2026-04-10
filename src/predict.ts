@@ -8,8 +8,9 @@
 import { CONFIG } from "./config";
 import { ResumeFeatures, extractResumeFeatures } from "./feature_engineering";
 import { predictBaselineScore } from "./baseline";
-import { loadModel, loadScaler } from "./persistence";
+import { loadModel, loadScaler, loadMinMax } from "./persistence";
 import { transformScaler } from "./ml/scaler";
+import { transformMinMax } from "./ml/minmaxScaler";
 import { ResumeData } from "@/types/resumeTypes";
 
 export interface PredictionResult {
@@ -41,14 +42,16 @@ export function predictAtsScore(data: Partial<ResumeData>): PredictionResult {
     const features = extractResumeFeatures(data);
     console.log(`[ML PIPELINE] Features extracted: ${features.resumeLength} words, ${features.skillsCount} skills`);
 
-    // 2. Load Artifacts (Milestone 5.12 & 5.19)
+    // 2. Load Artifacts (Milestone 5.12, 5.19, 5.20)
     const model = loadModel();
     const scaler = loadScaler();
+    const minmax = loadMinMax();
     console.log(`[ML PIPELINE] Starting inference for version ${model.version}`);
 
-    // 3. Transformation (Milestone 5.19)
-    // Scale features before scoring (demonstration of preprocessing discipline)
-    const [scaled] = transformScaler([features], scaler);
+    // 3. Transformation (Milestone 5.19 & 5.20)
+    // Demonstrate preprocessing discipline by applying dual-scaling
+    const [standardized] = transformScaler([features], scaler);
+    const [normalized] = transformMinMax([standardized], minmax);
     
     const weights = model.weights;
     const baselineScore = Math.round(features.keywordDensity * 100);

@@ -7,7 +7,8 @@ import { extractResumeFeatures } from "./feature_engineering";
 import { analyzeFeatures } from "./feature_analysis";
 import { trainTestSplit } from "./split";
 import { fitScaler, transformScaler } from "./ml/scaler";
-import { saveScaler } from "./persistence";
+import { fitMinMaxScaler, transformMinMax } from "./ml/minmaxScaler";
+import { saveScaler, saveMinMax } from "./persistence";
 
 /**
  * Orchestrates the Training stage of the ML Lifecycle.
@@ -46,10 +47,16 @@ function main() {
 
         console.log("[STAGE 4] Transforming Features (Z-Score Standardization)...");
         const scaledTrain = transformScaler(trainFeatures, scaler);
-        const scaledTest = transformScaler(test.map(r => extractResumeFeatures(r)), scaler);
+        
+        // 6. Feature Normalization (Milestone 5.20)
+        console.log("[STAGE 4] Fitting Normalization Preprocessor (MinMax [0, 1])...");
+        const minmax = fitMinMaxScaler(trainFeatures);
+        saveMinMax(minmax);
 
-        // 6. Feature & Target Separation (Milestone 5.14)
-        console.log("[STAGE 5] Separating Features (X) and Target (y)...");
+        console.log("[STAGE 4] Transforming Features (MinMax Calibration)...");
+        const normalizedTrain = transformMinMax(scaledTrain, minmax);
+
+        // 7. Feature & Target Separation (Milestone 5.14)
         const X = ALL_FEATURES; 
         const y = TARGET;       
 

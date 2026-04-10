@@ -38,17 +38,18 @@ The following columns are formally excluded to prevent overfitting or logical ci
 
 ---
 
-## ⚖️ Feature Scaling (Milestone 5.19)
+## ⚖️ Feature Normalization (Milestone 5.20)
 
-Numerical features in Rebot are standardized using a **StandardScaler** approach (Z-Score normalization):
-- **Transformation**: Scaled Value = (x - mean) / standard deviation.
-- **Result**: Features are centered at Mean 0 with unit variance (Std 1).
-- **Leakage Prevention**: **Scaler is fitted only on training data to prevent data leakage.** The learned statistics (Mean/Std) are saved to `models/scaler.json` and reused exactly during inference.
+Numerical features in Rebot are normalized using **MinMaxScaler**:
+- **Transformation**: `x_scaled = (x - min) / (max - min)`.
+- **Result**: All feature values are mapped strictly to the `[0, 1]` range.
+- **Leakage Prevention**: **Normalization is applied only after train-test split to prevent data leakage.** The min/max boundaries are learned from the training set, saved to `models/minmax_scaler.json`, and reused during inference.
 
-### 📐 Why Scaling is Optional
-The current Rebot engine uses weighted scoring, which is mathematically scale-invariant. However, scaling is implemented to:
-1. Demonstrate correct ML preprocessing discipline.
-2. Ensure future compatibility with distance-based or optimization-based algorithms (like SVM or Neural Networks).
+### 📐 Why Normalization is Optional
+The current Rebot engine is rule-based and not sensitive to feature magnitude. Normalization is implemented to demonstrate **proper ML preprocessing practices**, specifically for models sensitive to absolute scale (like Neural Networks or KNN).
+
+### ⚠️ Outlier Handling
+MinMaxScaler is sensitive to outliers. In Rebot, feature ranges (like word counts) are naturally bounded, so no extreme distortion occurs.
 
 ---
 
