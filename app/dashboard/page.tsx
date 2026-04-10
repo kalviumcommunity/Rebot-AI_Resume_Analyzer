@@ -97,6 +97,37 @@ export default function DashboardPage() {
                                 <span>ATS Score</span>
                                 <span className="text-lg">85</span>
                             </div>
+
+                            {/* ATS Insights Section (Milestone 5.33) */}
+                            <div className={`p-4 rounded-2xl ${isDark ? 'bg-white/5 border-white/10' : 'bg-black/5 border-black/10'} border`}>
+                                <div className="flex items-center gap-2 mb-3">
+                                    <Sparkles className="w-4 h-4 text-blue-500" />
+                                    <span className="text-[12px] font-bold uppercase tracking-wider opacity-60">ATS Insights</span>
+                                </div>
+                                <div className="space-y-2.5">
+                                    <div className="flex justify-between items-center text-[13px]">
+                                        <span className="opacity-70">Keywords</span>
+                                        <span className="font-bold">40%</span>
+                                    </div>
+                                    <div className="w-full h-1.5 bg-zinc-200/50 rounded-full overflow-hidden">
+                                        <div className="h-full bg-blue-500 rounded-full" style={{ width: "40%" }} />
+                                    </div>
+                                    <div className="flex justify-between items-center text-[13px]">
+                                        <span className="opacity-70">Metrics</span>
+                                        <span className="font-bold">25%</span>
+                                    </div>
+                                    <div className="w-full h-1.5 bg-zinc-200/50 rounded-full overflow-hidden">
+                                        <div className="h-full bg-green-500 rounded-full" style={{ width: "25%" }} />
+                                    </div>
+                                    <div className="flex justify-between items-center text-[13px]">
+                                        <span className="opacity-70">Action Verbs</span>
+                                        <span className="font-bold">20%</span>
+                                    </div>
+                                    <div className="w-full h-1.5 bg-zinc-200/50 rounded-full overflow-hidden">
+                                        <div className="h-full bg-[#8C6D1F] rounded-full" style={{ width: "20%" }} />
+                                    </div>
+                                </div>
+                            </div>
                             
                             <button 
                                 onClick={() => router.push("/resume-builder")}

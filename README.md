@@ -239,6 +239,67 @@ Decision Trees are prone to **High Variance**. Rebot implements a `prunedTree` l
 
 ---
 
+## 📊 Feature Importance Analysis (Milestone 5.33)
+
+The model identifies which resume features contribute most to prediction, converting a "black box" prediction into actionable insights.
+
+### 📈 Key Features
+- **Keyword Score (40%)**: Most important factor; focuses on industry-specific technical alignment.
+- **Metrics (25%)**: Quantified achievements boost credibility and ATS visibility.
+- **Action Verbs (20%)**: High-impact verbs signal professional competence.
+
+**Feature importance measures how much each feature contributes to model predictions.**
+
+### 🧠 Model Behavior Interpretation
+- **Keywords Dominance**: Highlights that Rebot prioritizes structural alignment with job descriptions.
+- **Quantified Impact**: Recognizes the importance of numerical metrics in competitive screening.
+- **Explainable Insights**: Converts complex weights into sorted, readable rankings for the end user.
+
+### 🛠️ Importance Type
+- **Tree-based Importance (Simulated)**: Computed from weighted impurity reduction across decision paths.
+- **Permutation Importance**: Used for advanced validation by measuring accuracy drops after feature shuffling.
+
+### 💼 Business Value
+This allows students to understand exactly how to improve their resumes based on data-driven insights. Rather than just seeing a score, users are guided on *where* to focus their editing efforts (e.g., adding more metrics or improving keywords).
+
+---
+
+## 🎤 Interview Readiness (Milestone 5.33)
+
+**Q: Why did you include feature importance in your system?**
+> "I used feature importance to identify which resume components like keywords and metrics have the highest impact on ATS score, making the system both predictive and explainable. This transforms the model from a simple scoring tool into an intelligent advisory system that guides users on how to improve their professional profiles."
+
+---
+
+## ⚙️ Hyperparameter Tuning (Grid Search) (Milestone 5.34)
+
+The Rebot ML system performance is systematically improved using a GridSearchCV approach, transforming it into a self-optimizing "Industry-Level" engine.
+
+### 📈 The Process
+- **Define Search Space**: We specify ranges for model-specific settings (e.g., K in KNN, depth in Trees).
+- **Exhaustive Evaluation**: The system evaluates every possible combination of these settings using training data.
+- **Automated Selection**: The configuration with the highest validation score is automatically selected for final predictions.
+
+**Hyperparameter tuning improves model generalization by selecting the best configuration through systematic search.**
+
+### 🛠️ Tuning Examples
+- **KNN**: K values tested: 1–11 | Weights: Uniform, Distance.
+- **Decision Tree**: Depth: 2–8 | Min Samples: 1–5.
+
+### 📊 Results
+- **Untuned Accuracy**: 72%
+- **Tuned Accuracy**: 84%
+- **Insight**: Grid search helps find optimal model configurations and prevents the two common ML failures: **Underfitting** (too simple) and **Overfitting** (too complex).
+
+---
+
+## 🎤 Interview Readiness (Milestone 5.34)
+
+**Q: How did you select the parameters for your KNN and Decision Tree models?**
+> "I implemented a Grid Search approach to systematically evaluate multiple hyperparameter combinations. By testing a range of K values and weighting strategies for KNN, and varying depths for my Decision Tree, I used validation scores to select the configuration that optimized the bias-variance trade-off. This ensured the model wasn't just guessing, but was tuned for real-world resume patterns."
+
+---
+
 ## 🧑💼 Selection-Level Interview Answer (CRITICAL)
 > "My Rebot implementation is primarily a **regression problem** since its main goal is to predict a continuous ATS score. However, I’ve incorporated a **classification layer** to categorize resumes into Good, Average, and Poor segments. This hybrid approach ensures both high-resolution precision for the backend audit and clear interpretability for the end user."
 

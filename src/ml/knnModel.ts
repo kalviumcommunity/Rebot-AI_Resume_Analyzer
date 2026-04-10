@@ -50,7 +50,8 @@ export function knnPredict(
   trainData: Record<string, number>[], 
   trainLabels: number[], 
   testPoint: Record<string, number>, 
-  k: number = 3
+  k: number = 3,
+  weight: "uniform" | "distance" = "uniform"
 ): number {
   const distances = trainData.map((point, index) => ({
     distance: euclideanDistance(point, testPoint),
@@ -63,20 +64,21 @@ export function knnPredict(
   // Take the K nearest
   const nearest = distances.slice(0, k);
 
-  // Majority Voting
+  // Voting Logic
   const votes: Record<number, number> = {};
   nearest.forEach(n => {
-    votes[n.label] = (votes[n.label] || 0) + 1;
+    const voteWeight = weight === "distance" ? (1 / (n.distance || 0.001)) : 1;
+    votes[n.label] = (votes[n.label] || 0) + voteWeight;
   });
 
-  // Find class with most votes
+  // Find class with most weights/votes
   let winner = -1;
-  let maxVotes = -1;
+  let maxWeight = -1;
 
   for (const label in votes) {
     const l = Number(label);
-    if (votes[l] > maxVotes) {
-      maxVotes = votes[l];
+    if (votes[l] > maxWeight) {
+      maxWeight = votes[l];
       winner = l;
     }
   }
