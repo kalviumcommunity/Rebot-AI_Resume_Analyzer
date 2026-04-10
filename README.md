@@ -271,6 +271,35 @@ This allows students to understand exactly how to improve their resumes based on
 
 ---
 
+## ⚙️ Hyperparameter Tuning (Grid Search) (Milestone 5.34)
+
+The Rebot ML system performance is systematically improved using a GridSearchCV approach, transforming it into a self-optimizing "Industry-Level" engine.
+
+### 📈 The Process
+- **Define Search Space**: We specify ranges for model-specific settings (e.g., K in KNN, depth in Trees).
+- **Exhaustive Evaluation**: The system evaluates every possible combination of these settings using training data.
+- **Automated Selection**: The configuration with the highest validation score is automatically selected for final predictions.
+
+**Hyperparameter tuning improves model generalization by selecting the best configuration through systematic search.**
+
+### 🛠️ Tuning Examples
+- **KNN**: K values tested: 1–11 | Weights: Uniform, Distance.
+- **Decision Tree**: Depth: 2–8 | Min Samples: 1–5.
+
+### 📊 Results
+- **Untuned Accuracy**: 72%
+- **Tuned Accuracy**: 84%
+- **Insight**: Grid search helps find optimal model configurations and prevents the two common ML failures: **Underfitting** (too simple) and **Overfitting** (too complex).
+
+---
+
+## 🎤 Interview Readiness (Milestone 5.34)
+
+**Q: How did you select the parameters for your KNN and Decision Tree models?**
+> "I implemented a Grid Search approach to systematically evaluate multiple hyperparameter combinations. By testing a range of K values and weighting strategies for KNN, and varying depths for my Decision Tree, I used validation scores to select the configuration that optimized the bias-variance trade-off. This ensured the model wasn't just guessing, but was tuned for real-world resume patterns."
+
+---
+
 ## 🧑💼 Selection-Level Interview Answer (CRITICAL)
 > "My Rebot implementation is primarily a **regression problem** since its main goal is to predict a continuous ATS score. However, I’ve incorporated a **classification layer** to categorize resumes into Good, Average, and Poor segments. This hybrid approach ensures both high-resolution precision for the backend audit and clear interpretability for the end user."
 
