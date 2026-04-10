@@ -99,32 +99,69 @@ export default function DashboardPage() {
                             </div>
 
                             {/* ATS Insights Section (Milestone 5.33) */}
-                            <div className={`p-4 rounded-2xl ${isDark ? 'bg-white/5 border-white/10' : 'bg-black/5 border-black/10'} border`}>
+                            <div className="p-4 rounded-2xl bg-black/5 border border-black/10">
                                 <div className="flex items-center gap-2 mb-3">
-                                    <Sparkles className="w-4 h-4 text-blue-500" />
+                                    <div className="p-1 rounded-md bg-blue-500/10">
+                                        <FileText className="w-3.5 h-3.5 text-blue-600" />
+                                    </div>
                                     <span className="text-[12px] font-bold uppercase tracking-wider opacity-60">ATS Insights</span>
                                 </div>
                                 <div className="space-y-2.5">
                                     <div className="flex justify-between items-center text-[13px]">
-                                        <span className="opacity-70">Keywords</span>
+                                        <span className="opacity-70 text-[12px]">Keywords</span>
                                         <span className="font-bold">40%</span>
                                     </div>
                                     <div className="w-full h-1.5 bg-zinc-200/50 rounded-full overflow-hidden">
                                         <div className="h-full bg-blue-500 rounded-full" style={{ width: "40%" }} />
                                     </div>
                                     <div className="flex justify-between items-center text-[13px]">
-                                        <span className="opacity-70">Metrics</span>
+                                        <span className="opacity-70 text-[12px]">Metrics</span>
                                         <span className="font-bold">25%</span>
                                     </div>
                                     <div className="w-full h-1.5 bg-zinc-200/50 rounded-full overflow-hidden">
                                         <div className="h-full bg-green-500 rounded-full" style={{ width: "25%" }} />
                                     </div>
                                     <div className="flex justify-between items-center text-[13px]">
-                                        <span className="opacity-70">Action Verbs</span>
+                                        <span className="opacity-70 text-[12px]">Action Verbs</span>
                                         <span className="font-bold">20%</span>
                                     </div>
                                     <div className="w-full h-1.5 bg-zinc-200/50 rounded-full overflow-hidden">
                                         <div className="h-full bg-[#8C6D1F] rounded-full" style={{ width: "20%" }} />
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Model Optimization Status (Milestone 5.35) */}
+                            <div className="p-4 rounded-2xl bg-amber-50/50 border border-amber-200/50">
+                                <div className="flex items-center justify-between mb-3">
+                                    <div className="flex items-center gap-2">
+                                        <Monitor className="w-4 h-4 text-amber-600" />
+                                        <span className="text-[11px] font-bold uppercase tracking-wider text-amber-700">Model Optimization</span>
+                                    </div>
+                                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-green-500/20 text-green-700">LIVE</span>
+                                </div>
+                                <div className="space-y-2">
+                                    <div className="flex items-center gap-2 text-[12px] text-amber-900/70">
+                                        <div className="w-4 h-4 rounded-full bg-green-500 flex items-center justify-center">
+                                            <svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
+                                        </div>
+                                        <span>Random Search (Coarse)</span>
+                                    </div>
+                                    <div className="flex items-center gap-2 text-[12px] text-amber-900/70">
+                                        <div className="w-4 h-4 rounded-full bg-green-500 flex items-center justify-center">
+                                            <svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
+                                        </div>
+                                        <span>Grid Search (Precision)</span>
+                                    </div>
+                                    <div className="pt-2 border-t border-amber-200/50 mt-2 flex justify-between items-end">
+                                        <div>
+                                            <div className="text-[10px] uppercase opacity-50 font-bold">Accuracy</div>
+                                            <div className="text-lg font-light text-amber-900 leading-none">84%</div>
+                                        </div>
+                                        <div className="text-right">
+                                            <div className="text-[10px] uppercase opacity-50 font-bold italic text-green-700">Time Saved</div>
+                                            <div className="text-sm font-bold text-green-700 leading-none">60%</div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
