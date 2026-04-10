@@ -50,3 +50,47 @@ export function confusionMatrix(actual: number[], predicted: number[]) {
 
   return matrix;
 }
+
+/**
+ * Calculates Precision per class (Milestone 5.27).
+ * Precision = TP / (TP + FP)
+ */
+export function precisionScore(actual: number[], predicted: number[], targetClass: number): number {
+  let tp = 0;
+  let fp = 0;
+
+  for (let i = 0; i < actual.length; i++) {
+    if (predicted[i] === targetClass) {
+      if (actual[i] === targetClass) tp++;
+      else fp++;
+    }
+  }
+
+  return tp / (tp + fp || 1);
+}
+
+/**
+ * Calculates Recall per class (Milestone 5.27).
+ * Recall = TP / (TP + FN)
+ */
+export function recallScore(actual: number[], predicted: number[], targetClass: number): number {
+  let tp = 0;
+  let fn = 0;
+
+  for (let i = 0; i < actual.length; i++) {
+    if (actual[i] === targetClass) {
+      if (predicted[i] === targetClass) tp++;
+      else fn++;
+    }
+  }
+
+  return tp / (tp + fn || 1);
+}
+
+/**
+ * Calculates F1 Score (Milestone 5.27).
+ * F1 = 2 * (P * R) / (P + R)
+ */
+export function f1Score(precision: number, recall: number): number {
+  return (2 * precision * recall) / (precision + recall || 1);
+}

@@ -162,7 +162,7 @@ function main() {
         logModel("Linear Regression", report.linear);
 
         console.log("\n------------------------------------------");
-        console.log("   CLASSIFICATION EVALUATION (Milestone 5.25 & 5.26)");
+        console.log("   CLASSIFICATION EVALUATION (Milestone 5.25 - 5.27)");
         console.log(`   Baseline Accuracy: ${(report.classification.baselineAccuracy * 100).toFixed(2)}%`);
         console.log(`   Model Accuracy:    ${(report.classification.modelAccuracy * 100).toFixed(2)}%`);
         console.log(`   Improvement:       ${(report.classification.improvement * 100).toFixed(2)}%`);
@@ -174,6 +174,7 @@ function main() {
         console.log(`   [1] Avg:   ${report.classification.confusionMatrix["1"]["0"]}      ${report.classification.confusionMatrix["1"]["1"]}      ${report.classification.confusionMatrix["1"]["2"]}`);
         console.log(`   [2] Strong:${report.classification.confusionMatrix["2"]["0"]}      ${report.classification.confusionMatrix["2"]["1"]}      ${report.classification.confusionMatrix["2"]["2"]}`);
         console.log("   (Actual)\n");
+        console.log("   [Detailed per-class diagnostics logged by classificationEval]");
 
         console.log("------------------------------------------");
         crossValidate(dataset);

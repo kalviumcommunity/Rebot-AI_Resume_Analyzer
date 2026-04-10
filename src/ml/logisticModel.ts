@@ -60,3 +60,12 @@ export function predictLogistic(model: LogisticModel, features: any): number {
     if (prob > 0.33) return 1; // Average
     return 0; // Poor
 }
+
+/**
+ * Predicts category with a custom threshold (Milestone 5.27: Advanced).
+ * Lower threshold = High Recall
+ * Higher threshold = High Precision
+ */
+export function predictWithThreshold(prob: number, threshold = 0.5): number {
+    return prob >= threshold ? 2 : 0;
+}
