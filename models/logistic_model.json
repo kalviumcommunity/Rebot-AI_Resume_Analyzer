@@ -1,0 +1,14 @@
+{
+  "weights": {
+    "keywordDensity": 0.017886024605139883,
+    "actionVerbCount": 0.025927232068531092,
+    "metricCount": 0.1624306643535094,
+    "resumeLength": 0.3037515147381936,
+    "skillsCount": 0.007705258990287511,
+    "hasContactInfo": 0.39267315377273526,
+    "experienceYears": 0.2511782819415803,
+    "seniorityLevel": 0.366827544355094
+  },
+  "bias": 0,
+  "version": "v1.0-logistic"
+}

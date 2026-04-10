@@ -87,3 +87,23 @@ export function loadLinearModel() {
     }
     return JSON.parse(fs.readFileSync(modelPath, "utf-8"));
 }
+
+/**
+ * Saves the learned Logistic Regression model.
+ */
+export function saveLogisticModel(model: any) {
+    const modelPath = CONFIG.MODEL_PATH.replace("ats_model.json", "logistic_model.json");
+    fs.writeFileSync(modelPath, JSON.stringify(model, null, 2));
+    console.log(`[PERSISTENCE] Logistic Model artifact saved to: ${modelPath}`);
+}
+
+/**
+ * Loads the learned Logistic Regression model for inference.
+ */
+export function loadLogisticModel() {
+    const modelPath = CONFIG.MODEL_PATH.replace("ats_model.json", "logistic_model.json");
+    if (!fs.existsSync(modelPath)) {
+        throw new Error(`Logistic Model artifact missing at ${modelPath}. Run training first.`);
+    }
+    return JSON.parse(fs.readFileSync(modelPath, "utf-8"));
+}

@@ -6,9 +6,10 @@ import fs from "fs";
 import { CONFIG } from "./config";
 import { predictAtsScore } from "./predict";
 import { predictBaselineScore } from "./baseline";
-import { loadLinearModel } from "./persistence";
+import { loadLinearModel, loadLogisticModel } from "./persistence";
 import { predictLinear } from "./ml/linearModel";
-import { calculateMAE, calculateMSE, calculateRMSE, calculateR2 } from "./ml/metrics";
+import { predictLogistic } from "./ml/logisticModel";
+import { calculateMAE, calculateMSE, calculateRMSE, calculateR2, calculateAccuracy } from "./ml/metrics";
 import { extractResumeFeatures } from "./feature_engineering";
 
 /**
@@ -31,6 +32,12 @@ export function getEvaluationReport(testDataset?: any[]) {
     // If no dataset provided (legacy support), load full set
     const dataset = testDataset || loadDataset();
     
+    // Load Linear Model (Milestone 5.22)
+    const linearModel = loadLinearModel();
+    
+    // Load Logistic Model (Milestone 5.25)
+    const logisticModel = loadLogisticModel();
+
     const actuals: number[] = [];
     const rulePreds: number[] = [];
     const linearPreds: number[] = [];
@@ -39,13 +46,19 @@ export function getEvaluationReport(testDataset?: any[]) {
     // Calculate Mean Baseline once for the whole dataset (Milestone 5.21)
     const baselineConstant = predictBaselineScore(dataset);
     const baselinePreds = dataset.map(() => baselineConstant);
-    
-    // Load Linear Model (Milestone 5.22)
-    const linearModel = loadLinearModel();
+
+    const actualLabels: number[] = [];
+    const logisticPreds: number[] = [];
 
     dataset.forEach((item: any) => {
         const actual = item.actualScore || 70;
         actuals.push(actual);
+        
+        // Categorical Mapping (Milestone 5.25)
+        let label = 0;
+        if (actual >= 75) label = 2; // Strong
+        else if (actual >= 50) label = 1; // Average
+        actualLabels.push(label);
 
         // 1. Rule-based Prediction
         const rPred = predictAtsScore(item);
@@ -55,6 +68,10 @@ export function getEvaluationReport(testDataset?: any[]) {
         const features = extractResumeFeatures(item);
         const lScore = predictLinear(linearModel, features); 
         linearPreds.push(lScore || 0);
+
+        // 3. Logistic Regression Prediction (Milestone 5.25)
+        const logPred = predictLogistic(logisticModel, features);
+        logisticPreds.push(logPred);
         
         // Multi-Class Accuracy Stage (Hybrid Evaluation)
         let groundTruthLabel = "Poor";
@@ -70,11 +87,20 @@ export function getEvaluationReport(testDataset?: any[]) {
         r2: calculateR2(actuals, preds)
     });
 
+    // Classification Benchmarking (Milestone 5.25)
+    const accModel = calculateAccuracy(actualLabels, logisticPreds);
+    const majorityBaseline = actualLabels.map(() => 1); // Assume Average is the majority
+    const accBaseline = calculateAccuracy(actualLabels, majorityBaseline);
+
     return {
         accuracy: correctLabels / dataset.length,
         baseline: evaluate(baselinePreds),
         rule: evaluate(rulePreds),
-        linear: evaluate(linearPreds)
+        linear: evaluate(linearPreds),
+        classification: {
+            modelAccuracy: accModel,
+            baselineAccuracy: accBaseline
+        }
     };
 }
 
@@ -133,12 +159,17 @@ function main() {
         logModel("Linear Regression", report.linear);
 
         console.log("\n------------------------------------------");
+        console.log("   CLASSIFICATION EVALUATION (Milestone 5.25)");
+        console.log(`   Model Accuracy:    ${(report.classification.modelAccuracy * 100).toFixed(2)}%`);
+        console.log(`   Baseline Accuracy: ${(report.classification.baselineAccuracy * 100).toFixed(2)}%`);
+
+        console.log("\n------------------------------------------");
         crossValidate(dataset);
         
-        if (report.linear.r2 > 0) {
-            console.log("\n✅ SUCCESS: Linear Model outperforms baseline.");
+        if (report.linear.r2 > 0 && report.classification.modelAccuracy >= report.classification.baselineAccuracy) {
+            console.log("\n✅ SUCCESS: Full AI System exceeds all baselines.");
         } else {
-            console.log("\n❌ CAUTION: Model is worse than mean-baseline (Check for drift).");
+            console.log("\n❌ CAUTION: Performance gaps detected.");
         }
 
         if (report.accuracy >= 0.8 && report.linear.mae < report.baseline.mae) {
