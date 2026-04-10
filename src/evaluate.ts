@@ -28,16 +28,16 @@ export function getEvaluationReport(testDataset?: any[]) {
     const dataset = testDataset || loadDataset();
     
     let totalAbsoluteError = 0;
-    let totalBaselineError = 0;
     let correctLabels = 0;
+
+    // Calculate Mean Baseline once for the whole dataset (Milestone 5.21)
+    const baselineConstant = predictBaselineScore(dataset);
 
     dataset.forEach((item: any) => {
         // Pass the raw data object (Milestone 5.16+)
         const prediction = predictAtsScore(item);
-        const baseline = predictBaselineScore(item);
         
         totalAbsoluteError += Math.abs(prediction.score - item.actualScore);
-        totalBaselineError += Math.abs(baseline - item.actualScore);
         
         // Multi-Class Accuracy Stage (Hybrid Evaluation)
         // We calculate what the correct label SHOULD be based on the ground truth score
@@ -49,13 +49,16 @@ export function getEvaluationReport(testDataset?: any[]) {
     });
 
     const mae = totalAbsoluteError / dataset.length;
-    const bMae = totalBaselineError / dataset.length;
+    
+    // Calculate Baseline MAE (Milestone 5.21)
+    const baselineMAE = dataset.reduce((sum: number, item: any) => 
+        sum + Math.abs(item.actualScore - baselineConstant), 0) / dataset.length;
 
     return {
         accuracy: correctLabels / dataset.length,
         meanAbsoluteError: mae,
-        baselineMAE: bMae,
-        maeReduction: bMae - mae
+        baselineMAE: baselineMAE,
+        maeReduction: baselineMAE - mae
     };
 }
 
