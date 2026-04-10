@@ -183,6 +183,34 @@ KNN helps recommend resume quality based on similar past resumes, making predict
 
 ---
 
+## ⚖️ Bias–Variance Analysis (Milestone 5.31)
+
+The model performance is analyzed using training and testing metrics to ensure it generalizes well to unseen data.
+
+### 📈 Observations
+- **Train Accuracy**: Measures how well the model learns the training data (Lower error = Lower Bias).
+- **Test Accuracy**: Measures how well the model generalizes to new resumes (Consistent performance = Lower Variance).
+- **Gap**: The difference between Train and Test accuracy ($Gap = Train - Test$).
+
+### 🧠 Interpretation
+- **High Bias (Underfitting)**: Small gap but low accuracy on both sets. The model is too simple.
+- **High Variance (Overfitting)**: Large gap (e.g., > 15%). The model memorized the training data and fails on test data.
+- **Balanced Model**: High accuracy on both sets with a minimal gap.
+
+### 🛠️ Optimization Strategy
+- **Reduced K (KNN)** → Reduced bias (captures finer local patterns).
+- **Increased K (KNN)** → Reduced variance (averages out noise).
+- **Feature Engineering** → Plays a key role in reducing bias and improving model learning capacity.
+
+---
+
+## 🎤 Interview Readiness (Milestone 5.31)
+
+**Q: How do you know if your model is overfitting?**
+> "I analyzed my model using the bias–variance trade-off by comparing training and testing accuracy. A large gap between the two indicated high variance (overfitting), which I addressed by tuning model complexity and improving feature extraction to ensure better generalization."
+
+---
+
 ## 🧑💼 Selection-Level Interview Answer (CRITICAL)
 > "My Rebot implementation is primarily a **regression problem** since its main goal is to predict a continuous ATS score. However, I’ve incorporated a **classification layer** to categorize resumes into Good, Average, and Poor segments. This hybrid approach ensures both high-resolution precision for the backend audit and clear interpretability for the end user."
 
