@@ -58,12 +58,28 @@ Accuracy alone is not sufficient for evaluating resume classification, especiall
 ### 🎯 Business Interpretation
 **A higher F1 score means the system both correctly identifies strong resumes and avoids incorrect recommendations.** High recall ensures that strong resumes are not missed, while high precision ensures only qualified resumes are recommended.
 
+## 📊 Confusion Matrix Analysis (Milestone 5.29)
+
+The confusion matrix provides a complete, 360-degree view of model behavior that accuracy alone cannot show.
+
+### 📐 Insights
+- **Diagonal Values**: Represent correct predictions (True Positives).
+- **Off-Diagonal Values**: Represent specific error patterns (e.g., Poor resumes being confused for Strong ones).
+
+**The confusion matrix shows how predictions are distributed across actual and predicted classes, revealing error patterns.**
+
+### 🎯 Business Interpretation
+- **False Negatives (Strong Resumes Missed)**: High values mean good candidates are being ignored by the system.
+- **False Positives (Poor Resumes Marked Strong)**: High values mean weak resumes are incorrectly recommended to recruiters.
+
+By inspecting the matrix, we can pinpoint exactly which classes are difficult for the model to distinguish and adjust our feature engineering accordingly.
+
 ---
 
-## 🎤 Interview Readiness (Milestone 5.28)
+## 🎤 Interview Readiness (Milestone 5.29)
 
-**Q: Why did you use F1 Score instead of just Accuracy?**
-> "I used F1 Score because it balances precision and recall, ensuring my model doesn’t miss good resumes while also avoiding incorrect recommendations. Accuracy can be misleading on imbalanced data, so F1 provides a scientifically validated measure of how well the model handles all categories."
+**Q: Why do you prefer a Confusion Matrix over just reporting Accuracy?**
+> "Accuracy is just a summary number. The confusion matrix helped me understand exactly where my model was making mistakes, especially whether it was missing strong resumes or incorrectly recommending weak ones. It revealed error patterns that helped me decide whether to prioritize precision or recall for the business."
 
 ---
 
