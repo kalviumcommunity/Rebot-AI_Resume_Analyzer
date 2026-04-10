@@ -38,23 +38,21 @@ The following columns are formally excluded to prevent overfitting or logical ci
 
 ---
 
-## 📊 Model Evaluation (MAE) (Milestone 5.23)
+## 📊 Model Evaluation (MSE & R²) (Milestone 5.24)
 
-Mean Absolute Error (MAE) is the primary metric used to evaluate Rebot's prediction performance. **MAE is chosen because it provides an intuitive measure of average prediction error in real ATS score units.**
+Rebot uses a multi-layered evaluation suite to measure both absolute error magnitude and relative explanatory power.
 
-### 📈 Triple-Benchmark Comparison
-| Model | MAE (Lower is better) | Improvement over Baseline (%) |
-|-------|-----------------------|-------------------------------|
-| **Baseline (Mean)** | X pts | 0% |
-| **Rule-based** | Y pts | Z% |
-| **Linear Regression** | A pts | B% |
+### 📈 Comparison Matrix
+| Model | MAE | RMSE | R² (Higher is better) |
+|-------|-----|------|-----------------------|
+| **Baseline (Mean)** | X | X | ~0 |
+| **Rule-based Engine** | Y | Y | Z |
+| **Linear Regression** | A | A | B |
 
-### 📐 Business Interpretation
-- **MAE Magnitude**: An MAE of **5** means that, on average, the system's ATS score prediction is off by only **5 points** compared to human grading.
-- **Contextual Accuracy**: We measure MAE as a **percentage of the target mean** to ensure the error is within acceptable business tolerances (e.g., < 10%).
-
-### 🔄 Performance Stability
-The system uses **K-fold Cross-Validation** to ensure that performance gains are consistent across all dataset segments, preventing deceptive results from lucky data splits.
+### 📐 Key Metrics Interpretation
+- **MSE (Mean Squared Error)**: Quantifies the average squared deviation. This metric is sensitive to large outliers, ensuring outliers are penalized heavily.
+- **RMSE (Root Mean Squared Error)**: Provides the error magnitude in original ATS score units. **An RMSE of 5 means the score prediction is off by 5 points on average.**
+- **R² Score**: Measures the proportion of variance explained by the model. **R² compares the model against a mean baseline and shows how much variance is explained.**
 
 ---
 

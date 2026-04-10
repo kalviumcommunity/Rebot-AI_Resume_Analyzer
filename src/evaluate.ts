@@ -8,7 +8,7 @@ import { predictAtsScore } from "./predict";
 import { predictBaselineScore } from "./baseline";
 import { loadLinearModel } from "./persistence";
 import { predictLinear } from "./ml/linearModel";
-import { calculateMAE } from "./ml/metrics";
+import { calculateMAE, calculateMSE, calculateRMSE, calculateR2 } from "./ml/metrics";
 import { extractResumeFeatures } from "./feature_engineering";
 
 /**
@@ -38,6 +38,7 @@ export function getEvaluationReport(testDataset?: any[]) {
 
     // Calculate Mean Baseline once for the whole dataset (Milestone 5.21)
     const baselineConstant = predictBaselineScore(dataset);
+    const baselinePreds = dataset.map(() => baselineConstant);
     
     // Load Linear Model (Milestone 5.22)
     const linearModel = loadLinearModel();
@@ -62,23 +63,18 @@ export function getEvaluationReport(testDataset?: any[]) {
         if (rPred.label === groundTruthLabel) correctLabels++;
     });
 
-    const maeRule = calculateMAE(actuals, rulePreds);
-    const maeLinear = calculateMAE(actuals, linearPreds);
-    const baselineMAE = calculateMAE(actuals, actuals.map(() => baselineConstant));
-
-    const improvement = baselineMAE - maeLinear;
-    const improvementPercent = (improvement / baselineMAE) * 100;
-
-    const meanTarget = actuals.reduce((a, b) => a + b, 0) / actuals.length;
-    const maePercentOfTarget = (maeLinear / meanTarget) * 100;
+    const evaluate = (preds: number[]) => ({
+        mae: calculateMAE(actuals, preds),
+        mse: calculateMSE(actuals, preds),
+        rmse: calculateRMSE(calculateMSE(actuals, preds)),
+        r2: calculateR2(actuals, preds)
+    });
 
     return {
         accuracy: correctLabels / dataset.length,
-        maeBaseline: baselineMAE,
-        maeRule: maeRule,
-        maeLinear: maeLinear,
-        improvementPercent: improvementPercent,
-        maePercentOfTarget: maePercentOfTarget
+        baseline: evaluate(baselinePreds),
+        rule: evaluate(rulePreds),
+        linear: evaluate(linearPreds)
     };
 }
 
@@ -123,21 +119,32 @@ function main() {
         const report = getEvaluationReport();
 
         console.log(`Dataset Size:      ${dataset.length} samples`);
-        console.log(`Baseline MAE:      ${report.maeBaseline.toFixed(2)} pts`);
-        console.log(`Rule-based MAE:    ${report.maeRule.toFixed(2)} pts`);
-        console.log(`Linear Regr MAE:   ${report.maeLinear.toFixed(2)} pts`);
         
-        console.log("\n🚀 Improvement over baseline: ", (report.maeBaseline - report.maeLinear).toFixed(2));
-        console.log(`📈 % Improvement:    ${report.improvementPercent.toFixed(2)}%`);
-        console.log(`📊 MAE % of Target:  ${report.maePercentOfTarget.toFixed(2)}%`);
+        const logModel = (name: string, metrics: any) => {
+            console.log(`\n📊 ${name}`);
+            console.log(`   MAE:  ${metrics.mae.toFixed(2)}`);
+            console.log(`   MSE:  ${metrics.mse.toFixed(2)}`);
+            console.log(`   RMSE: ${metrics.rmse.toFixed(2)}`);
+            console.log(`   R²:   ${metrics.r2.toFixed(3)}`);
+        };
+
+        logModel("Baseline (Mean)", report.baseline);
+        logModel("Rule-Based Engine", report.rule);
+        logModel("Linear Regression", report.linear);
 
         console.log("\n------------------------------------------");
         crossValidate(dataset);
         
-        if (report.accuracy >= 0.8 && report.improvementPercent > 5) {
-            console.log("\nSTATUS: SUCCESS - ML Model significantly outperforms baseline.");
+        if (report.linear.r2 > 0) {
+            console.log("\n✅ SUCCESS: Linear Model outperforms baseline.");
         } else {
-            console.log("\nSTATUS: CAUTION - Performance gains are marginal.");
+            console.log("\n❌ CAUTION: Model is worse than mean-baseline (Check for drift).");
+        }
+
+        if (report.accuracy >= 0.8 && report.linear.mae < report.baseline.mae) {
+            console.log("STATUS: Production Ready.");
+        } else {
+            console.log("STATUS: Optimization Required.");
         }
         console.log("==========================================\n");
     } catch (error) {

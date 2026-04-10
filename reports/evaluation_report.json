@@ -1,10 +1,23 @@
 {
   "model_version": "v1.0",
-  "timestamp": "2026-04-10T05:49:09.314Z",
+  "timestamp": "2026-04-10T06:06:44.792Z",
   "accuracy": 1,
-  "maeBaseline": 0,
-  "maeRule": 35,
-  "maeLinear": 191.83809523809524,
-  "improvementPercent": null,
-  "maePercentOfTarget": 548.1088435374149
+  "baseline": {
+    "mae": 0,
+    "mse": 0,
+    "rmse": 0,
+    "r2": 0
+  },
+  "rule": {
+    "mae": 35,
+    "mse": 1225,
+    "rmse": 35,
+    "r2": 0
+  },
+  "linear": {
+    "mae": 191.83809523809524,
+    "mse": 36801.8547845805,
+    "rmse": 191.83809523809524,
+    "r2": 0
+  }
 }
