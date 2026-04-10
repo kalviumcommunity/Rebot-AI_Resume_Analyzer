@@ -6,6 +6,8 @@ import fs from "fs";
 import { CONFIG } from "./config";
 import { predictAtsScore } from "./predict";
 import { predictBaselineScore } from "./baseline";
+import { loadLinearModel } from "./persistence";
+import { predictLinear } from "./ml/linearModel";
 
 /**
  * Loads the ground truth resumes from 'data/raw/resumes.json'.
@@ -28,16 +30,25 @@ export function getEvaluationReport(testDataset?: any[]) {
     const dataset = testDataset || loadDataset();
     
     let totalAbsoluteError = 0;
+    let totalLinearError = 0;
     let correctLabels = 0;
 
     // Calculate Mean Baseline once for the whole dataset (Milestone 5.21)
     const baselineConstant = predictBaselineScore(dataset);
+    
+    // Load Linear Model (Milestone 5.22)
+    const linearModel = loadLinearModel();
 
     dataset.forEach((item: any) => {
-        // Pass the raw data object (Milestone 5.16+)
+        // 1. Rule-based Prediction
         const prediction = predictAtsScore(item);
-        
         totalAbsoluteError += Math.abs(prediction.score - item.actualScore);
+
+        // 2. Linear Regression Prediction (Milestone 5.22)
+        // We reuse predictAtsScore's pre-extracted features if possible, 
+        // but for pure evaluation we can extracted them fresh for the linear model
+        const lScore = predictLinear(linearModel, item.features || {}); 
+        totalLinearError += Math.abs((lScore || 0) - item.actualScore);
         
         // Multi-Class Accuracy Stage (Hybrid Evaluation)
         // We calculate what the correct label SHOULD be based on the ground truth score
@@ -49,6 +60,7 @@ export function getEvaluationReport(testDataset?: any[]) {
     });
 
     const mae = totalAbsoluteError / dataset.length;
+    const lMae = totalLinearError / dataset.length;
     
     // Calculate Baseline MAE (Milestone 5.21)
     const baselineMAE = dataset.reduce((sum: number, item: any) => 
@@ -58,7 +70,8 @@ export function getEvaluationReport(testDataset?: any[]) {
         accuracy: correctLabels / dataset.length,
         meanAbsoluteError: mae,
         baselineMAE: baselineMAE,
-        maeReduction: baselineMAE - mae
+        linearMAE: lMae,
+        maeReduction: baselineMAE - lMae
     };
 }
 
@@ -75,8 +88,9 @@ function main() {
         const report = getEvaluationReport();
 
         console.log(`Dataset Size:      ${loadDataset().length} samples`);
-        console.log(`ML Model MAE:      ${report.meanAbsoluteError.toFixed(2)} pts`);
         console.log(`Baseline MAE:      ${report.baselineMAE.toFixed(2)} pts`);
+        console.log(`Rule-based MAE:    ${report.meanAbsoluteError.toFixed(2)} pts`);
+        console.log(`Linear Regr MAE:   ${report.linearMAE.toFixed(2)} pts`);
         console.log(`MAE Reduction:     ${report.maeReduction.toFixed(2)} pts (Lower is better)`);
         console.log(`Accuracy:          ${(report.accuracy * 100).toFixed(2)}%`);
 
