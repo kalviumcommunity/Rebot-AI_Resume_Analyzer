@@ -47,6 +47,29 @@ The following columns are formally excluded to prevent overfitting or logical ci
 
 ---
 
+## 🏗️ Feature Engineering Taxonomy (Milestone 5.18)
+
+### Numerical Features
+- **keywordDensity**: Ratio of tech keywords matched in resume (Continuous).
+- **actionVerbCount**: Total count of impact verbs detected (Discrete).
+- **metricCount**: Count of quantitative achievements/percentages (Discrete).
+- **skillsCount**: Breadth of tech stack across categories (Discrete).
+- **experienceYears**: Calculated seniority based on roles (Continuous).
+
+### Categorical Features
+- **seniorityLevel**: Maps years of experience to "Entry-Level", "Mid-Level", or "Senior".
+
+### Excluded Features
+- **rawText**: Source text, noisy and carries high cardinality (replaced by features).
+- **userId / id**: Identifiers that carry zero predictive signal.
+
+### 📐 Feature Type Justification
+All features are treated as numerical (where applicable) because they represent **measurable quantities** where arithmetic operations carry physical meaning. Categorical labels (Seniority) are used solely for interpretability and high-level segmentation.
+
+**All features are numerical and represent meaningful quantities suitable for arithmetic operations.**
+
+---
+
 ## ⌛ Prediction Moment Test (Milestone 5.17)
 To ensure the model is valid in the real world, it passes the "Prediction Moment Test." At the exact moment a user uploads a resume:
 
