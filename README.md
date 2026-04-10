@@ -38,28 +38,32 @@ The following columns are formally excluded to prevent overfitting or logical ci
 
 ---
 
-## 🔬 Precision & Recall Evaluation (Milestone 5.27)
+## 🔬 F1 Score Evaluation (Milestone 5.28)
 
-Accuracy alone is not sufficient for evaluating resume classification. Rebot uses a detailed per-class diagnostic suite to measure decision quality.
+Accuracy alone is not sufficient for evaluating resume classification, especially on imbalanced datasets. Rebot uses the **F1-Score** to balance Precision and Recall, ensuring stable model performance.
 
-### 📉 Core Concepts
-- **Precision**: Measures the quality of predictions. (How many resumes we labeled "Strong" are actually strong?)
-- **Recall**: Measures the coverage of detection. (How many actual "Strong" resumes did we correctly identify?)
-- **F1 Score**: The harmonic mean balancing both precision and recall.
+### 📐 Why F1?
+- **Accuracy can be misleading**: A model can achieve high accuracy by simply predicting the majority class while failing to detect the minority class.
+- **Precision alone is not enough**: Evaluating only correctness ignores how many actual positives were missed.
+- **Recall alone is not enough**: Evaluating only coverage ignores how many false alarms were raised.
 
-### 📐 Statistical Integrity
-- **Baseline Comparison**: We benchmark our per-class metrics against a majority-class baseline to prove the model's predictive superiority.
-- **Mandatory Logic**: **Precision measures correctness of predictions, while Recall measures completeness of detection.**
+**F1 Score is the harmonic mean of Precision and Recall, penalizing models that perform poorly on either metric.**
+
+### 📈 Results & Baseline
+- **Baseline F1 (Majority Class)**: Represents the minimum threshold of "dummy" performance.
+- **Model F1**: Measures the actual predictive power of our features.
+
+**Insight**: A higher Model F1 compared to Baseline F1 scientifically validates that our features (keyword density, action verbs, etc.) carry genuine predictive signal.
 
 ### 🎯 Business Interpretation
-**High recall ensures that strong resumes are not missed, while high precision ensures only qualified resumes are recommended.** This dual-layered validation ensures Rebot provides a reliable and comprehensive talent assessment tool for recruiters.
+**A higher F1 score means the system both correctly identifies strong resumes and avoids incorrect recommendations.** High recall ensures that strong resumes are not missed, while high precision ensures only qualified resumes are recommended.
 
 ---
 
-## 🎤 Interview Readiness (Milestone 5.27)
+## 🎤 Interview Readiness (Milestone 5.28)
 
-**Q: How did you evaluate your classification model?**
-> "Accuracy alone was not sufficient, so I used Precision and Recall to evaluate how well my model identifies strong resumes and avoids incorrect classifications. High recall ensures that strong resumes are not missed, while high precision ensures only qualified resumes are recommended."
+**Q: Why did you use F1 Score instead of just Accuracy?**
+> "I used F1 Score because it balances precision and recall, ensuring my model doesn’t miss good resumes while also avoiding incorrect recommendations. Accuracy can be misleading on imbalanced data, so F1 provides a scientifically validated measure of how well the model handles all categories."
 
 ---
 
