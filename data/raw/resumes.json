@@ -1,26 +1,34 @@
 [
   {
     "id": 1,
-    "features": {
-      "keywordDensity": 0.8,
-      "actionVerbCount": 12,
-      "metricCount": 5,
-      "skillsCount": 20,
-      "experienceYears": 5
+    "user": {
+      "email": "john@example.com",
+      "linkedin": "linkedin.com/in/john"
     },
-    "actualScore": 92,
-    "label": "Good"
+    "skills": {
+      "languages": ["javascript", "typescript"],
+      "frontend": ["react"],
+      "backend": ["node"],
+      "tools": ["git", "docker"]
+    },
+    "experience": [
+      { "title": "Developer", "years": 2 },
+      { "title": "Senior Dev", "years": 3 }
+    ],
+    "actualScore": 92
   },
   {
     "id": 2,
-    "features": {
-      "keywordDensity": 0.2,
-      "actionVerbCount": 2,
-      "metricCount": 0,
-      "skillsCount": 5,
-      "experienceYears": 1
+    "user": {
+      "email": "jane@example.com"
     },
-    "actualScore": 35,
-    "label": "Poor"
+    "skills": {
+      "languages": ["python"],
+      "tools": ["git"]
+    },
+    "experience": [
+      { "title": "Junior Dev", "years": 1 }
+    ],
+    "actualScore": 35
   }
 ]

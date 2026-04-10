@@ -6,6 +6,8 @@ import { loadData } from "./data_loader";
 import { extractResumeFeatures } from "./feature_engineering";
 import { analyzeFeatures } from "./feature_analysis";
 import { trainTestSplit } from "./split";
+import { fitScaler, transformScaler } from "./ml/scaler";
+import { saveScaler } from "./persistence";
 
 /**
  * Orchestrates the Training stage of the ML Lifecycle.
@@ -37,8 +39,17 @@ function main() {
         // 4. Feature Distribution Inspection (Milestone 5.15)
         analyzeFeatures(trainFeatures);
 
-        // 5. Feature & Target Separation (Milestone 5.14)
-        console.log("[STAGE 4] Separating Features (X) and Target (y)...");
+        // 5. Numerical Scaling (Milestone 5.19)
+        console.log("[STAGE 4] Fitting Scaling Preprocessor (Train Set ONLY)...");
+        const scaler = fitScaler(trainFeatures);
+        saveScaler(scaler);
+
+        console.log("[STAGE 4] Transforming Features (Z-Score Standardization)...");
+        const scaledTrain = transformScaler(trainFeatures, scaler);
+        const scaledTest = transformScaler(test.map(r => extractResumeFeatures(r)), scaler);
+
+        // 6. Feature & Target Separation (Milestone 5.14)
+        console.log("[STAGE 5] Separating Features (X) and Target (y)...");
         const X = ALL_FEATURES; 
         const y = TARGET;       
 

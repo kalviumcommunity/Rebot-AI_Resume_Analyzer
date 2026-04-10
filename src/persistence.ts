@@ -27,3 +27,23 @@ export function loadModel() {
     }
     return JSON.parse(fs.readFileSync(CONFIG.MODEL_PATH, "utf-8"));
 }
+
+/**
+ * Saves the fitted scaler artifact (Means and Stds).
+ */
+export function saveScaler(scaler: any) {
+    const scalerPath = CONFIG.MODEL_PATH.replace("ats_model.json", "scaler.json");
+    fs.writeFileSync(scalerPath, JSON.stringify(scaler, null, 2));
+    console.log(`[PERSISTENCE] Scaler artifact saved to: ${scalerPath}`);
+}
+
+/**
+ * Loads the fitted scaler artifact for inference.
+ */
+export function loadScaler() {
+    const scalerPath = CONFIG.MODEL_PATH.replace("ats_model.json", "scaler.json");
+    if (!fs.existsSync(scalerPath)) {
+        throw new Error(`Scaler artifact missing at ${scalerPath}. Run training first.`);
+    }
+    return JSON.parse(fs.readFileSync(scalerPath, "utf-8"));
+}
