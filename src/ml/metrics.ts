@@ -63,19 +63,3 @@ export function calculateR2(actual: number[], predicted: number[]): number {
     if (ssTotal === 0) return 0; // Prevent divide by zero
     return 1 - (ssResidual / ssTotal);
 }
-
-/**
- * Calculates Accuracy for Classification.
- * Percentage of correct label predictions.
- */
-export function calculateAccuracy(actual: number[], predicted: number[]): number {
-    if (actual.length !== predicted.length) return 0;
-    if (actual.length === 0) return 0;
-
-    let correct = 0;
-    for (let i = 0; i < actual.length; i++) {
-        if (actual[i] === predicted[i]) correct++;
-    }
-
-    return correct / actual.length;
-}

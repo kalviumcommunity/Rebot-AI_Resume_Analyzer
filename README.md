@@ -38,22 +38,22 @@ The following columns are formally excluded to prevent overfitting or logical ci
 
 ---
 
-## 🎯 Classification Mode (Logistic Regression) (Milestone 5.25)
+## 📊 Classification Evaluation (Accuracy) (Milestone 5.26)
 
-In addition to continuous scoring, **Rebot specializes in qualitative resume categorization.** We convert ATS scores into three meaningful classes:
-- **0 → Poor Resume** (Score < 50)
-- **1 → Average Resume** (Score 50-75)
-- **2 → Strong Resume** (Score > 75)
+Rebot's classification performance is rigorously evaluated using **Accuracy**, but with specific statistical guardrails to prevent misleading results.
 
-### Probabilistic Classifier
-**Logistic Regression predicts probabilities and classifies resumes into categories based on ATS score.** Unlike simple thresholds, this model learns the probability of class membership, allowing for more nuanced quality assessments.
+### 📉 Results Comparison
+- **Baseline Accuracy**: X% (Majority-class naive guess)
+- **Model Accuracy**: Y% (Logistic Regression categorical prediction)
+- **Improvement**: +Z% over baseline
 
-### Performance Benchmarking
-Qualitative performance is measured using **Accuracy** and compared against a **Majority-Class Baseline** (naive model that always predicts the local average).
+### 📐 Statistical Integrity
+- **Baseline Benchmarking**: **Accuracy is compared against a majority-class baseline to ensure the model is not biased.** This ensures we aren't "faking" accuracy by simply predicting the most common category.
+- **Confusion Matrix**: We use a 3x3 matrix to visualize class-wise precision, distinguishing between correctly identified "Strong" resumes and misclassified "Average" ones.
+- **Balanced Accuracy**: We average recall across all three classes to ensure the model performs fairly across the entire quality spectrum, regardless of class imbalance.
 
-| Metric | Logistic Classifier | Baseline (Majority) | 
-|--------|---------------------|---------------------|
-| **Accuracy** | X% | Y% |
+### 🎯 Business Interpretation
+**An accuracy of 0.85 means the model correctly classifies 85 out of 100 resumes.** This high-level metric provides immediate confidence to human recruiters reviewing the system's categorical labels.
 
 ---
 
