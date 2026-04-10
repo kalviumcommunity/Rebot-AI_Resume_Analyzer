@@ -39,10 +39,20 @@ The following columns are formally excluded to prevent overfitting or logical ci
 ---
 
 ### 🛡️ Data Leakage Prevention 
-- **Zero Target Leakage**: The `ats_score` (Target) is strictly separated from the input Feature matrix (`X`). Programmatic checks in `train.ts` prevent accidental overlap.
+- **Zero Target Leakage**: The `ats_score` (Target) is strictly separated from the input Feature matrix (`X`). Programmatic checks in `feature_engineering.ts` explicitly reject target variables to prevent "cheating."
 - **Fit vs. Transform Isolation**: Preprocessing parameters are learned once during training and reused identically during inference.
 - **Inference Purity**: The `predict.ts` module is architecturally read-only.
 - **Preprocessing Timing**: Preprocessing (feature extraction) is applied **after splitting** to ensure no information from the test set leaks into the training statistics.
+- **All features used in the model are available at prediction time.**
+
+---
+
+## ⌛ Prediction Moment Test (Milestone 5.17)
+To ensure the model is valid in the real world, it passes the "Prediction Moment Test." At the exact moment a user uploads a resume:
+
+1. **Information Available**: Only the raw Resume Text (PDF/Docx content).
+2. **Information NOT Available**: The final ATS score, recruiter feedback, or future hiring decisions.
+3. **Verdict**: Every feature used in Rebot (Keyword Density, Action Verbs, etc.) is derived exclusively from the input text, proving zero future-based leakage.
 
 ---
 

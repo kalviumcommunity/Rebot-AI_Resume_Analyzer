@@ -25,6 +25,11 @@ function main() {
         console.log("[STAGE 2] Performing Train-Test Split (80/20)...");
         const { train, test } = trainTestSplit(rawData, 0.2, CONFIG.RANDOM_SEED);
 
+        // Split Size Validation (Milestone 5.17)
+        if (train.length === 0 || test.length === 0) {
+            throw new Error(`[LEAKAGE RISK] Invalid dataset split! Train: ${train.length}, Test: ${test.length}. Check if your source data is too small.`);
+        }
+
         // 3. Feature Extraction & Analysis (Training Set ONLY)
         console.log("[STAGE 3] Extracting Features for Training Set Audit...");
         const trainFeatures = train.map((item: any) => extractResumeFeatures(item));
