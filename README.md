@@ -38,21 +38,22 @@ The following columns are formally excluded to prevent overfitting or logical ci
 
 ---
 
-## 📊 Model Evaluation (MSE & R²) (Milestone 5.24)
+## 🎯 Classification Mode (Logistic Regression) (Milestone 5.25)
 
-Rebot uses a multi-layered evaluation suite to measure both absolute error magnitude and relative explanatory power.
+In addition to continuous scoring, **Rebot specializes in qualitative resume categorization.** We convert ATS scores into three meaningful classes:
+- **0 → Poor Resume** (Score < 50)
+- **1 → Average Resume** (Score 50-75)
+- **2 → Strong Resume** (Score > 75)
 
-### 📈 Comparison Matrix
-| Model | MAE | RMSE | R² (Higher is better) |
-|-------|-----|------|-----------------------|
-| **Baseline (Mean)** | X | X | ~0 |
-| **Rule-based Engine** | Y | Y | Z |
-| **Linear Regression** | A | A | B |
+### Probabilistic Classifier
+**Logistic Regression predicts probabilities and classifies resumes into categories based on ATS score.** Unlike simple thresholds, this model learns the probability of class membership, allowing for more nuanced quality assessments.
 
-### 📐 Key Metrics Interpretation
-- **MSE (Mean Squared Error)**: Quantifies the average squared deviation. This metric is sensitive to large outliers, ensuring outliers are penalized heavily.
-- **RMSE (Root Mean Squared Error)**: Provides the error magnitude in original ATS score units. **An RMSE of 5 means the score prediction is off by 5 points on average.**
-- **R² Score**: Measures the proportion of variance explained by the model. **R² compares the model against a mean baseline and shows how much variance is explained.**
+### Performance Benchmarking
+Qualitative performance is measured using **Accuracy** and compared against a **Majority-Class Baseline** (naive model that always predicts the local average).
+
+| Metric | Logistic Classifier | Baseline (Majority) | 
+|--------|---------------------|---------------------|
+| **Accuracy** | X% | Y% |
 
 ---
 

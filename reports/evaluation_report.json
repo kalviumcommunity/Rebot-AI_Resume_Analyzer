@@ -1,6 +1,6 @@
 {
   "model_version": "v1.0",
-  "timestamp": "2026-04-10T06:06:44.792Z",
+  "timestamp": "2026-04-10T06:26:20.023Z",
   "accuracy": 1,
   "baseline": {
     "mae": 0,
@@ -19,5 +19,9 @@
     "mse": 36801.8547845805,
     "rmse": 191.83809523809524,
     "r2": 0
+  },
+  "classification": {
+    "modelAccuracy": 0,
+    "baselineAccuracy": 0
   }
 }

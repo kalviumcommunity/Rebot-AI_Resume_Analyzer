@@ -9,7 +9,8 @@ import { trainTestSplit } from "./split";
 import { fitScaler, transformScaler } from "./ml/scaler";
 import { fitMinMaxScaler, transformMinMax } from "./ml/minmaxScaler";
 import { trainLinearModel } from "./ml/linearModel";
-import { saveScaler, saveMinMax, saveLinearModel } from "./persistence";
+import { trainLogisticModel } from "./ml/logisticModel";
+import { saveScaler, saveMinMax, saveLinearModel, saveLogisticModel } from "./persistence";
 
 /**
  * Orchestrates the Training stage of the ML Lifecycle.
@@ -63,7 +64,17 @@ function main() {
         const linearModel = trainLinearModel(normalizedTrain, targets);
         saveLinearModel(linearModel);
 
-        // 8. Feature & Target Separation (Milestone 5.14)
+        // 8. Logistic Model Training (Milestone 5.25: Classification)
+        console.log("[STAGE 6] Training Logistic Regression Model (Categorization)...");
+        const labels = targets.map(score => {
+            if (score < 50) return 0; // Poor
+            if (score < 75) return 1; // Average
+            return 2; // Strong
+        });
+        const logisticModel = trainLogisticModel(normalizedTrain, labels);
+        saveLogisticModel(logisticModel);
+
+        // 9. Feature & Target Separation (Milestone 5.14)
         const X = ALL_FEATURES; 
         const y = TARGET;       
 
