@@ -38,28 +38,48 @@ The following columns are formally excluded to prevent overfitting or logical ci
 
 ---
 
-## 🔬 Precision & Recall Evaluation (Milestone 5.27)
+## 🔬 F1 Score Evaluation (Milestone 5.28)
 
-Accuracy alone is not sufficient for evaluating resume classification. Rebot uses a detailed per-class diagnostic suite to measure decision quality.
+Accuracy alone is not sufficient for evaluating resume classification, especially on imbalanced datasets. Rebot uses the **F1-Score** to balance Precision and Recall, ensuring stable model performance.
 
-### 📉 Core Concepts
-- **Precision**: Measures the quality of predictions. (How many resumes we labeled "Strong" are actually strong?)
-- **Recall**: Measures the coverage of detection. (How many actual "Strong" resumes did we correctly identify?)
-- **F1 Score**: The harmonic mean balancing both precision and recall.
+### 📐 Why F1?
+- **Accuracy can be misleading**: A model can achieve high accuracy by simply predicting the majority class while failing to detect the minority class.
+- **Precision alone is not enough**: Evaluating only correctness ignores how many actual positives were missed.
+- **Recall alone is not enough**: Evaluating only coverage ignores how many false alarms were raised.
 
-### 📐 Statistical Integrity
-- **Baseline Comparison**: We benchmark our per-class metrics against a majority-class baseline to prove the model's predictive superiority.
-- **Mandatory Logic**: **Precision measures correctness of predictions, while Recall measures completeness of detection.**
+**F1 Score is the harmonic mean of Precision and Recall, penalizing models that perform poorly on either metric.**
+
+### 📈 Results & Baseline
+- **Baseline F1 (Majority Class)**: Represents the minimum threshold of "dummy" performance.
+- **Model F1**: Measures the actual predictive power of our features.
+
+**Insight**: A higher Model F1 compared to Baseline F1 scientifically validates that our features (keyword density, action verbs, etc.) carry genuine predictive signal.
 
 ### 🎯 Business Interpretation
-**High recall ensures that strong resumes are not missed, while high precision ensures only qualified resumes are recommended.** This dual-layered validation ensures Rebot provides a reliable and comprehensive talent assessment tool for recruiters.
+**A higher F1 score means the system both correctly identifies strong resumes and avoids incorrect recommendations.** High recall ensures that strong resumes are not missed, while high precision ensures only qualified resumes are recommended.
+
+## 📊 Confusion Matrix Analysis (Milestone 5.29)
+
+The confusion matrix provides a complete, 360-degree view of model behavior that accuracy alone cannot show.
+
+### 📐 Insights
+- **Diagonal Values**: Represent correct predictions (True Positives).
+- **Off-Diagonal Values**: Represent specific error patterns (e.g., Poor resumes being confused for Strong ones).
+
+**The confusion matrix shows how predictions are distributed across actual and predicted classes, revealing error patterns.**
+
+### 🎯 Business Interpretation
+- **False Negatives (Strong Resumes Missed)**: High values mean good candidates are being ignored by the system.
+- **False Positives (Poor Resumes Marked Strong)**: High values mean weak resumes are incorrectly recommended to recruiters.
+
+By inspecting the matrix, we can pinpoint exactly which classes are difficult for the model to distinguish and adjust our feature engineering accordingly.
 
 ---
 
-## 🎤 Interview Readiness (Milestone 5.27)
+## 🎤 Interview Readiness (Milestone 5.29)
 
-**Q: How did you evaluate your classification model?**
-> "Accuracy alone was not sufficient, so I used Precision and Recall to evaluate how well my model identifies strong resumes and avoids incorrect classifications. High recall ensures that strong resumes are not missed, while high precision ensures only qualified resumes are recommended."
+**Q: Why do you prefer a Confusion Matrix over just reporting Accuracy?**
+> "Accuracy is just a summary number. The confusion matrix helped me understand exactly where my model was making mistakes, especially whether it was missing strong resumes or incorrectly recommending weak ones. It revealed error patterns that helped me decide whether to prioritize precision or recall for the business."
 
 ---
 
@@ -136,6 +156,30 @@ No log or scaling transformations were applied because:
 ### 📈 Feature vs Target Insights
 - **Strong Correlation**: `keywordDensity` and `metricCount` show the highest positive impact on the `ats_score`.
 - **Moderate Impact**: `actionVerbCount` provides a secondary signal for resume quality.
+
+---
+
+## 🧑🔬 K-Nearest Neighbors (KNN) Model (Milestone 5.30)
+
+KNN predicts resume category based on **similarity** with existing resumes rather than learned weights.
+
+### 📈 How it works
+- **Euclidean Distance**: Calculates the straight-line distance between feature sets.
+- **Majority Voting**: Selects $K$ nearest resumes ($K=3$ by default) and picks the most frequent category.
+- **Non-Parametric**: KNN is a non-parametric model that makes predictions based on similarity rather than learned weights.
+
+### 📐 Feature Scaling
+**Feature scaling is critical for KNN.** Without normalization, features with larger numerical ranges (like experience years vs keyword density) would dominate the distance calculation, leading to incorrect predictions. Rebot applies MinMax scaling locally before KNN processing.
+
+### 🎯 Business Interpretation
+KNN helps recommend resume quality based on similar past resumes, making predictions more interpretable for recruiters. If a resume is labeled "Strong," we can identify exactly which "Strong" resumes in our database it most resembles.
+
+---
+
+## 🎤 Interview Readiness (Milestone 5.30)
+
+**Q: Why did you add KNN when you already had Logistic Regression?**
+> "Unlike regression models which use learned weights, KNN predicts based on similarity between resumes. In the context of Rebot, this makes the logic highly interpretable and useful for recommendation-style insights, as we can point to similar high-quality resumes that justify the score."
 
 ---
 

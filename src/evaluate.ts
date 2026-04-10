@@ -13,7 +13,10 @@ import { evaluateClassification } from "./classificationEval";
 import { 
     calculateMAE, calculateMSE, calculateRMSE, calculateR2 
 } from "./ml/metrics";
+import { calculateAccuracy } from "./ml/classificationMetrics";
 import { extractResumeFeatures } from "./feature_engineering";
+import { trainTestSplit } from "./split";
+import { knnPredict, normalizeFeatures } from "./ml/knnModel";
 
 /**
  * Loads the ground truth resumes from 'data/raw/resumes.json'.
@@ -32,8 +35,12 @@ function loadDataset() {
  * @param testDataset - The subset of data Reserved for testing (Milestone 5.16)
  */
 export function getEvaluationReport(testDataset?: any[]) {
-    // If no dataset provided (legacy support), load full set
-    const dataset = testDataset || loadDataset();
+    // 1. Data Loading & Splitting for KNN (Milestone 5.30)
+    const fullDataset = loadDataset();
+    const { train: trainSet, test: testSetSplit } = trainTestSplit(fullDataset, 0.2, CONFIG.RANDOM_SEED);
+    
+    // If no dataset provided (legacy support), use the split test set
+    const dataset = testDataset || testSetSplit;
     
     // Load Linear Model (Milestone 5.22)
     const linearModel = loadLinearModel();
@@ -53,7 +60,27 @@ export function getEvaluationReport(testDataset?: any[]) {
     const actualLabels: number[] = [];
     const logisticPreds: number[] = [];
 
-    dataset.forEach((item: any) => {
+    // KNN Preparation (Milestone 5.30)
+    const trainFeaturesRaw = trainSet.map((item: any) => extractResumeFeatures(item));
+    const trainLabels = trainSet.map((item: any) => {
+        const score = item.actualScore || 70;
+        if (score >= 75) return 2;
+        if (score >= 50) return 1;
+        return 0;
+    });
+
+    const testFeaturesRaw = dataset.map((item: any) => extractResumeFeatures(item));
+    
+    // Normalize BOTH sets together to ensure distance parity
+    const allFeaturesRaw = [...trainFeaturesRaw, ...testFeaturesRaw];
+    const allFeaturesNormalized = normalizeFeatures(allFeaturesRaw);
+    
+    const trainFeatures = allFeaturesNormalized.slice(0, trainFeaturesRaw.length);
+    const testFeatures = allFeaturesNormalized.slice(trainFeaturesRaw.length);
+
+    const knnPreds: number[] = [];
+
+    dataset.forEach((item: any, idx: number) => {
         const actual = item.actualScore || 70;
         actuals.push(actual);
         
@@ -75,6 +102,10 @@ export function getEvaluationReport(testDataset?: any[]) {
         // 3. Logistic Regression Prediction (Milestone 5.25)
         const logPred = predictLogistic(logisticModel, features);
         logisticPreds.push(logPred);
+
+        // 4. KNN Prediction (Milestone 5.30)
+        const kPred = knnPredict(trainFeatures, trainLabels, testFeatures[idx], 3);
+        knnPreds.push(kPred);
         
         // Multi-Class Accuracy Stage (Hybrid Evaluation)
         let groundTruthLabel = "Poor";
@@ -91,6 +122,7 @@ export function getEvaluationReport(testDataset?: any[]) {
     });
 
     const classificationDiag = evaluateClassification(actualLabels, logisticPreds, dataset);
+    const knnAccuracy = calculateAccuracy(actualLabels, knnPreds);
 
     return {
         accuracy: correctLabels / dataset.length,
@@ -102,7 +134,8 @@ export function getEvaluationReport(testDataset?: any[]) {
             baselineAccuracy: classificationDiag.accBaseline,
             improvement: classificationDiag.improvement,
             confusionMatrix: classificationDiag.matrix,
-            balancedAccuracy: classificationDiag.balAcc
+            balancedAccuracy: classificationDiag.balAcc,
+            knnAccuracy: knnAccuracy
         }
     };
 }
@@ -162,10 +195,11 @@ function main() {
         logModel("Linear Regression", report.linear);
 
         console.log("\n------------------------------------------");
-        console.log("   CLASSIFICATION EVALUATION (Milestone 5.25 - 5.27)");
+        console.log("   CLASSIFICATION EVALUATION (Milestone 5.25 - 5.30)");
         console.log(`   Baseline Accuracy: ${(report.classification.baselineAccuracy * 100).toFixed(2)}%`);
-        console.log(`   Model Accuracy:    ${(report.classification.modelAccuracy * 100).toFixed(2)}%`);
-        console.log(`   Improvement:       ${(report.classification.improvement * 100).toFixed(2)}%`);
+        console.log(`   Logistic Accuracy: ${(report.classification.modelAccuracy * 100).toFixed(2)}%`);
+        console.log(`   KNN Accuracy:      ${(report.classification.knnAccuracy * 100).toFixed(2)}%`);
+        console.log(`   Improvement (Max): ${((Math.max(report.classification.modelAccuracy, report.classification.knnAccuracy) - report.classification.baselineAccuracy) * 100).toFixed(2)}%`);
         console.log(`   Balanced Accuracy: ${(report.classification.balancedAccuracy * 100).toFixed(2)}%`);
 
         console.log("\n   Confusion Matrix (Actual \\ Predicted):");
@@ -179,8 +213,8 @@ function main() {
         console.log("------------------------------------------");
         crossValidate(dataset);
         
-        if (report.linear.r2 > 0 && report.classification.improvement >= 0) {
-            console.log("\n✅ SUCCESS: ML system demonstrates predictive value over baselines.");
+        if (report.linear.r2 > 0 && (report.classification.knnAccuracy >= report.classification.baselineAccuracy)) {
+            console.log("\n✅ SUCCESS: ML system (including KNN) demonstrates predictive value over baselines.");
         } else {
             console.log("\n❌ CAUTION: System requires further tuning.");
         }

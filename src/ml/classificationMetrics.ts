@@ -94,3 +94,20 @@ export function recallScore(actual: number[], predicted: number[], targetClass: 
 export function f1Score(precision: number, recall: number): number {
   return (2 * precision * recall) / (precision + recall || 1);
 }
+
+/**
+ * Calculates Macro F1 Score (Milestone 5.28).
+ * Macro F1 = Average of F1 scores for each class.
+ */
+export function macroF1(actual: number[], predicted: number[]): number {
+  const classes = [0, 1, 2];
+  let totalF1 = 0;
+
+  classes.forEach(cls => {
+    const precision = precisionScore(actual, predicted, cls);
+    const recall = recallScore(actual, predicted, cls);
+    totalF1 += f1Score(precision, recall);
+  });
+
+  return totalF1 / classes.length;
+}
