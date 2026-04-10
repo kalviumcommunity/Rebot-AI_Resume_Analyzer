@@ -239,6 +239,38 @@ Decision Trees are prone to **High Variance**. Rebot implements a `prunedTree` l
 
 ---
 
+## 📊 Feature Importance Analysis (Milestone 5.33)
+
+The model identifies which resume features contribute most to prediction, converting a "black box" prediction into actionable insights.
+
+### 📈 Key Features
+- **Keyword Score (40%)**: Most important factor; focuses on industry-specific technical alignment.
+- **Metrics (25%)**: Quantified achievements boost credibility and ATS visibility.
+- **Action Verbs (20%)**: High-impact verbs signal professional competence.
+
+**Feature importance measures how much each feature contributes to model predictions.**
+
+### 🧠 Model Behavior Interpretation
+- **Keywords Dominance**: Highlights that Rebot prioritizes structural alignment with job descriptions.
+- **Quantified Impact**: Recognizes the importance of numerical metrics in competitive screening.
+- **Explainable Insights**: Converts complex weights into sorted, readable rankings for the end user.
+
+### 🛠️ Importance Type
+- **Tree-based Importance (Simulated)**: Computed from weighted impurity reduction across decision paths.
+- **Permutation Importance**: Used for advanced validation by measuring accuracy drops after feature shuffling.
+
+### 💼 Business Value
+This allows students to understand exactly how to improve their resumes based on data-driven insights. Rather than just seeing a score, users are guided on *where* to focus their editing efforts (e.g., adding more metrics or improving keywords).
+
+---
+
+## 🎤 Interview Readiness (Milestone 5.33)
+
+**Q: Why did you include feature importance in your system?**
+> "I used feature importance to identify which resume components like keywords and metrics have the highest impact on ATS score, making the system both predictive and explainable. This transforms the model from a simple scoring tool into an intelligent advisory system that guides users on how to improve their professional profiles."
+
+---
+
 ## 🧑💼 Selection-Level Interview Answer (CRITICAL)
 > "My Rebot implementation is primarily a **regression problem** since its main goal is to predict a continuous ATS score. However, I’ve incorporated a **classification layer** to categorize resumes into Good, Average, and Poor segments. This hybrid approach ensures both high-resolution precision for the backend audit and clear interpretability for the end user."
 

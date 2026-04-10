@@ -19,6 +19,7 @@ import { trainTestSplit } from "./split";
 import { knnPredict, normalizeFeatures } from "./ml/knnModel";
 import { diagnoseBiasVariance, learningCurve } from "./ml/biasVariance";
 import { enhancedDecisionTree } from "./ml/decisionTree";
+import { getFeatureImportance, printImportance, interpretImportance } from "./ml/featureImportance";
 
 /**
  * Loads the ground truth resumes from 'data/raw/resumes.json'.
@@ -246,14 +247,16 @@ function main() {
         logModel("Linear Regression", report.linear);
 
         console.log("\n------------------------------------------");
-        console.log("   CLASSIFICATION EVALUATION (Milestone 5.25 - 5.32)");
+        console.log("   CLASSIFICATION EVALUATION (Milestone 5.25 - 5.33)");
         console.log(`   Baseline Accuracy: ${(report.classification.baselineAccuracy * 100).toFixed(2)}%`);
         console.log(`   Logistic Accuracy: ${(report.classification.modelAccuracy * 100).toFixed(2)}%`);
         console.log(`   KNN Accuracy:      ${(report.classification.knnAccuracy * 100).toFixed(2)}%`);
         console.log(`   Tree Accuracy:     ${(report.classification.treeAccuracy * 100).toFixed(2)}%`);
-        console.log(`   Tree Gap (Var):    ${(report.classification.treeGap * 100).toFixed(2)}%`);
         console.log(`   Improvement (Max): ${((Math.max(report.classification.modelAccuracy, report.classification.knnAccuracy, report.classification.treeAccuracy) - report.classification.baselineAccuracy) * 100).toFixed(2)}%`);
-        console.log(`   Balanced Accuracy: ${(report.classification.balancedAccuracy * 100).toFixed(2)}%`);
+
+        const importance = getFeatureImportance();
+        printImportance(importance);
+        interpretImportance(importance);
 
         learningCurve(
             [5, 10, 20, 50],
@@ -264,8 +267,8 @@ function main() {
         console.log("\n------------------------------------------");
         crossValidate(dataset);
         
-        if (report.linear.r2 > 0 && (report.classification.treeAccuracy >= report.classification.baselineAccuracy)) {
-            console.log("\n✅ SUCCESS: ML system is balanced and rule-interpretable.");
+        if (report.linear.r2 > 0 && report.classification.treeAccuracy >= report.classification.baselineAccuracy) {
+            console.log("\n✅ SUCCESS: ML system is balanced, rule-interpretable, and explainable.");
         } else {
             console.log("\n❌ CAUTION: System requires further complexity tuning.");
         }
