@@ -9,7 +9,10 @@ import { predictBaselineScore } from "./baseline";
 import { loadLinearModel, loadLogisticModel } from "./persistence";
 import { predictLinear } from "./ml/linearModel";
 import { predictLogistic } from "./ml/logisticModel";
-import { calculateMAE, calculateMSE, calculateRMSE, calculateR2, calculateAccuracy } from "./ml/metrics";
+import { evaluateClassification } from "./classificationEval";
+import { 
+    calculateMAE, calculateMSE, calculateRMSE, calculateR2 
+} from "./ml/metrics";
 import { extractResumeFeatures } from "./feature_engineering";
 
 /**
@@ -87,10 +90,7 @@ export function getEvaluationReport(testDataset?: any[]) {
         r2: calculateR2(actuals, preds)
     });
 
-    // Classification Benchmarking (Milestone 5.25)
-    const accModel = calculateAccuracy(actualLabels, logisticPreds);
-    const majorityBaseline = actualLabels.map(() => 1); // Assume Average is the majority
-    const accBaseline = calculateAccuracy(actualLabels, majorityBaseline);
+    const classificationDiag = evaluateClassification(actualLabels, logisticPreds, dataset);
 
     return {
         accuracy: correctLabels / dataset.length,
@@ -98,8 +98,11 @@ export function getEvaluationReport(testDataset?: any[]) {
         rule: evaluate(rulePreds),
         linear: evaluate(linearPreds),
         classification: {
-            modelAccuracy: accModel,
-            baselineAccuracy: accBaseline
+            modelAccuracy: classificationDiag.accModel,
+            baselineAccuracy: classificationDiag.accBaseline,
+            improvement: classificationDiag.improvement,
+            confusionMatrix: classificationDiag.matrix,
+            balancedAccuracy: classificationDiag.balAcc
         }
     };
 }
@@ -159,17 +162,26 @@ function main() {
         logModel("Linear Regression", report.linear);
 
         console.log("\n------------------------------------------");
-        console.log("   CLASSIFICATION EVALUATION (Milestone 5.25)");
-        console.log(`   Model Accuracy:    ${(report.classification.modelAccuracy * 100).toFixed(2)}%`);
+        console.log("   CLASSIFICATION EVALUATION (Milestone 5.25 & 5.26)");
         console.log(`   Baseline Accuracy: ${(report.classification.baselineAccuracy * 100).toFixed(2)}%`);
+        console.log(`   Model Accuracy:    ${(report.classification.modelAccuracy * 100).toFixed(2)}%`);
+        console.log(`   Improvement:       ${(report.classification.improvement * 100).toFixed(2)}%`);
+        console.log(`   Balanced Accuracy: ${(report.classification.balancedAccuracy * 100).toFixed(2)}%`);
 
-        console.log("\n------------------------------------------");
+        console.log("\n   Confusion Matrix (Actual \\ Predicted):");
+        console.log("             [0]    [1]    [2]   (Predicted)");
+        console.log(`   [0] Poor:  ${report.classification.confusionMatrix["0"]["0"]}      ${report.classification.confusionMatrix["0"]["1"]}      ${report.classification.confusionMatrix["0"]["2"]}`);
+        console.log(`   [1] Avg:   ${report.classification.confusionMatrix["1"]["0"]}      ${report.classification.confusionMatrix["1"]["1"]}      ${report.classification.confusionMatrix["1"]["2"]}`);
+        console.log(`   [2] Strong:${report.classification.confusionMatrix["2"]["0"]}      ${report.classification.confusionMatrix["2"]["1"]}      ${report.classification.confusionMatrix["2"]["2"]}`);
+        console.log("   (Actual)\n");
+
+        console.log("------------------------------------------");
         crossValidate(dataset);
         
-        if (report.linear.r2 > 0 && report.classification.modelAccuracy >= report.classification.baselineAccuracy) {
-            console.log("\n✅ SUCCESS: Full AI System exceeds all baselines.");
+        if (report.linear.r2 > 0 && report.classification.improvement >= 0) {
+            console.log("\n✅ SUCCESS: ML system demonstrates predictive value over baselines.");
         } else {
-            console.log("\n❌ CAUTION: Performance gaps detected.");
+            console.log("\n❌ CAUTION: System requires further tuning.");
         }
 
         if (report.accuracy >= 0.8 && report.linear.mae < report.baseline.mae) {

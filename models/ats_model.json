@@ -1,7 +1,7 @@
 {
   "version": "v1.0",
   "type": "WeightedScoringEngine",
-  "calibratedAt": "2026-04-10T06:26:20.020Z",
+  "calibratedAt": "2026-04-10T06:59:29.762Z",
   "weights": {
     "keywordDensity": 40,
     "actionVerbCount": 15,

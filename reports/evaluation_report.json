@@ -1,6 +1,6 @@
 {
   "model_version": "v1.0",
-  "timestamp": "2026-04-10T06:26:20.023Z",
+  "timestamp": "2026-04-10T06:59:29.768Z",
   "accuracy": 1,
   "baseline": {
     "mae": 0,
@@ -22,6 +22,25 @@
   },
   "classification": {
     "modelAccuracy": 0,
-    "baselineAccuracy": 0
+    "baselineAccuracy": 0,
+    "improvement": 0,
+    "confusionMatrix": {
+      "0": {
+        "0": 0,
+        "1": 0,
+        "2": 1
+      },
+      "1": {
+        "0": 0,
+        "1": 0,
+        "2": 0
+      },
+      "2": {
+        "0": 0,
+        "1": 0,
+        "2": 0
+      }
+    },
+    "balancedAccuracy": 0
   }
 }
