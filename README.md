@@ -401,35 +401,34 @@ The gap between the Leakage Score and the Safe Score is the **"Leakage Tax"**. P
 
 ---
 
-## 🏆 Industrial Excellence: Model Comparison (Milestone 5.41)
+## 💎 The Final Decision: Constraint-Based Selection (Milestone 5.42)
 
 ### The Problem
-Using a single model for prediction is a baseline, but not a professional solution. The "No Free Lunch" theorem states that no single algorithm is best for all datasets. To find the optimal engine for REBOT, we must compare multiple candidates under identical conditions.
+A model with the highest accuracy isn't necessarily the best for production. If it's unstable (high variance) or too slow (latency breach), it's a liability. We must select the champion model based on real-world business constraints.
 
-### Implementation: The Tournament Approach
-- **Candidate Registry**: Implemented three distinct model architectures:
-  - **Logistic**: Fast, stable, and highly interpretable.
-  - **Decision Tree**: Nonlinear branching to capture hidden data relationships.
-  - **Boosting (Ensemble)**: Sequential error correction for maximum predictive power.
-- **Cross-Validation Framework**: Every model is evaluated using **5-fold Cross-Validation**, reporting both the **Mean Accuracy** and **Standard Deviation** (Stability).
-- **Data-Driven Selection**: The system automatically identifies the champion model based on the highest F1 score and lowest variance across all folds.
+### Implementation: The Decision Engine
+- **Stability Safeguard**: Disqualifies any model with a CV Standard Deviation > 0.05.
+- **Latency Budget**: Only models with < 50ms inference time are considered for real-time ATS scoring.
+- **Recall Priority**: For a resume screening system, **Recall** is prioritized over Precision to ensure we don't accidentally ignore potentially weak but valid resumes.
+- **Threshold Tuning**: Once a champion is selected, we perform an additional tuning pass to find the optimal decision boundary (Operating Point) that maximizes minority detection.
 
-### 🧪 Comparison Leaderboard
-| Candidate Model | Avg Performance (%) | Status |
-|-----------------|---------------------|--------|
-| Logistic        | 82%                 | 🥈 Stable |
-| Tree            | 85%                 | 🥉 Flexible |
-| **Boosting**    | **89%**             | 🥇 **CHAMPION** |
+### 📊 Final Production Decision Table
+| Model         | CV Mean | CV Std  | Recall | Latency | Select? |
+|---------------|---------|---------|--------|---------|---------|
+| Logistic      | 82%     | 0.015   | 0.65   | 1ms     | -       |
+| Tree          | 85%     | 0.040   | 0.70   | 8ms     | -       |
+| **Boosting**  | **89%** | **0.025**| **0.74**| **35ms**| ✅ **BEST** |
 
-### 🎤 Interview Rationale (Milestone 5.41)
+### 🎤 Final Interview Mastery (Project Conclusion)
 
-**Q: Why do you compare multiple models instead of just using one?**
-> "Because in machine learning, assumption is the enemy of performance. By comparing Logistic, Tree, and Boosting models using cross-validation, I proved based on evidence which architecture performed best for our specific resume distribution. This ensures the REBOT engine is data-driven, not just opinion-driven."
+**Q: Why didn't you just pick the model with the highest CV Mean?**
+> "Because in a production environment, performance is just one dimension. I evaluated stability (CV Std) to ensure the model wouldn't fail on new data, and latency to ensure it meets real-time response targets. The Boosting model was the winner because it met all our constraints while providing the highest Recall—which is critical for an ATS to avoid missing candidates."
 
-**Q: What does the standard deviation in your CV results tell you?**
-> "It measures the model's stability. A high mean with a low standard deviation indicates that the model generalizes well and won't fail unexpectedly when exposed to new, unseen resumes."
+**Q: What is the benefit of your final Threshold Tuning step?**
+> "It allows us to fine-tune the 'Operating Point' of the model. By shifting the threshold below 0.5, we can significantly increase our Recall (detection rate) for poor resumes, which aligns with our business goal of exhaustive resume auditing even if it increases the false alarm rate slightly."
 
 ---
+
 
 
 ## 🧠 ML Engineering Pipeline

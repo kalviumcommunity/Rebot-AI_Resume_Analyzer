@@ -1,27 +1,36 @@
 /**
- * Milestone 5.38: Threshold Tuning
- * Responsibility: Adjusting decision boundaries to prioritize Recall or Precision.
+ * Milestone 5.42: Advanced Threshold Tuning
+ * Responsibility: Optimizing decision boundaries for Recall (ATS Priority).
  */
-export function tuneThreshold(probs: number[], actual: number[], positiveClass: number = 2) {
-  console.log("\n🎚️ THRESHOLD TUNING ANALYSIS (Class " + positiveClass + ")");
-  console.log(`| Threshold | Precision | Recall | Status |`);
-  console.log(`|-----------|-----------|--------|--------|`);
+export function tuneThreshold(probabilities: number[], labels: number[]) {
+  console.log("\n🎯 INITIATING RECALL-CENTRIC THRESHOLD TUNING");
+  
+  let bestThreshold = 0.5;
+  let bestRecall = 0;
 
   for (let t = 0.1; t <= 0.7; t += 0.1) {
-    const predictions = probs.map(p => (p >= t ? positiveClass : 0));
+    let tp = 0, fn = 0;
 
-    let TP = 0, FP = 0, FN = 0;
-    for (let i = 0; i < actual.length; i++) {
-      if (actual[i] === positiveClass && predictions[i] === positiveClass) TP++;
-      else if (actual[i] !== positiveClass && predictions[i] === positiveClass) FP++;
-      else if (actual[i] === positiveClass && predictions[i] !== positiveClass) FN++;
+    probabilities.forEach((p, i) => {
+      // 1 = Positive (e.g., Good/Selected), 0 = Negative
+      const pred = p >= t ? 1 : 0;
+      const actual = labels[i];
+
+      if (actual === 1 && pred === 1) tp++;
+      if (actual === 1 && pred === 0) fn++;
+    });
+
+    const recall = tp / (tp + fn || 1);
+    
+    console.log(`- Testing Threshold ${t.toFixed(1)}: Recall = ${recall.toFixed(3)}`);
+
+    if (recall > bestRecall) {
+      bestRecall = recall;
+      bestThreshold = t;
     }
-
-    const precision = TP / (TP + FP || 1);
-    const recall = TP / (TP + FN || 1);
-    
-    let status = t === 0.5 ? "Standard" : (recall > 0.8 ? "High Recall" : "Balanced");
-    
-    console.log(`| ${t.toFixed(1)}       | ${precision.toFixed(2)}      | ${recall.toFixed(2)}   | ${status} |`);
   }
+
+  console.log(`\n🏆 OPTIMAL THRESHOLD: ${bestThreshold.toFixed(1)} (Maximizes Detection Recall)`);
+
+  return bestThreshold;
 }
