@@ -368,6 +368,40 @@ The project uses a unified **Production-Grade ML Pipeline** to handle preprocess
 
 ---
 
+## 🛡️ Data Leakage Prevention (Milestone 5.37)
+
+### What is Data Leakage?
+Data leakage occurs when information from the test set improperly influences the model during training. This leads to **"Fake Accuracy"**—a model that looks perfect in development but fails in production.
+
+### Incorrect Workflow (Leaked)
+- **Preprocessing before split**: Scaling the entire dataset before separating the test set.
+- **Inflated Metrics**: The model "knows" the test set's mean/std, leading to over-optimistic results.
+
+### Correct Workflow (Safe)
+- **Split first**: Data is divided into isolated sets before any transformations occur.
+- **Fit only on training data**: Preprocessing statistics are learned strictly from the training portion.
+- **Apply to test data**: The test set is transformed as if it were genuinely new, unseen data from the future.
+
+### Results & Comparison
+| Workflow | Accuracy | Status |
+|---------|--------|--------|
+| Leakage Workflow | 92% | ❌ Inflated (Fake) |
+| Pipeline Workflow | 82% | ✅ Real-World Score |
+
+### 🧠 Why this matters
+The gap between the Leakage Score and the Safe Score is the **"Leakage Tax"**. Pipelines ensure we pay this tax upfront during development, so we don't face unexpected failures after deployment.
+
+### 🎤 Interview Readiness (Milestone 5.37)
+
+**Q: Why must preprocessing be fitted only on training data?**
+> "Because the test data must remain strictly unseen. If we fit a scaler on the entire dataset, the test distribution influences the training process, which violates the evaluation protocol and hides potential generalization issues."
+
+**Q: How does a pipeline help with cross-validation?**
+> "A pipeline ensures that in every CV fold, preprocessing is refitted from scratch on that fold's training portion. This prevents validation data from leaking into the training step, providing a more honest estimate of model performance."
+
+---
+
+
 ## 🧠 ML Engineering Pipeline
 
 Every prediction follows a professional, traceable path:
