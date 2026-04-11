@@ -401,6 +401,37 @@ The gap between the Leakage Score and the Safe Score is the **"Leakage Tax"**. P
 
 ---
 
+## ⚖️ Class Imbalance Handling (Milestone 5.38)
+
+### The Problem
+The dataset contains significantly more "Average" or "Strong" resumes than "Poor" ones. In such cases, **Accuracy** becomes a misleading metric because a model can achieve 90% accuracy by simply ignoring the minority class.
+
+### Implemented Solutions
+- **Class Distribution Analysis**: Automatically identifies underrepresented categories.
+- **Baseline Comparison**: Compares model performance against a "Always Majority" classifier to prove real learning.
+- **Precision, Recall, & F1-Score**: Adopts metrics that specifically track success on minority classes.
+- **Stratified Splitting**: Ensures training and testing sets maintain the same class ratios.
+- **Threshold Tuning**: Provides a way to prioritize Recall (detecting more poor resumes) or Precision (reducing false alarms).
+- **Class Weights**: Penalizes errors on minority classes more heavily during prediction simulation.
+
+### 📈 Results & Visuals
+```text
+📊 ATS Analysis
+
+Accuracy:  92% ❌ (Misleading - baseline is high)
+F1 Score:  0.72 ✅ (Real/Balanced performance)
+```
+
+### 🎤 Interview Readiness (Milestone 5.38)
+
+**Q: Why is accuracy a bad metric for imbalanced data?**
+> "Because in an imbalanced set, accuracy is dominated by the majority class. A fraud detection model with 99% accuracy is useless if it misses the 1% of fraud cases. F1-score and Recall are much better indicators of true performance."
+
+**Q: What was your strategy for handling imbalance in REBOT?**
+> "I implemented stratified splitting to ensure consistent data distribution and used threshold tuning to optimize for Recall, ensuring that the system identifies poor resumes even when they are rare in the sample set."
+
+---
+
 
 ## 🧠 ML Engineering Pipeline
 
