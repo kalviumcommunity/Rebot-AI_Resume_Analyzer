@@ -29,9 +29,25 @@ function main() {
         experience: [{ title: "Developer", description: "Improved performance by 25%." }]
     } as any;
     
+    // Milestone 5.36: Pipeline Integration
+    console.log("[STAGE 4] Testing Production Pipeline (Milestone 5.36)...");
+    const { buildPipeline, runPipeline, fitPipeline, savePipeline, loadPipeline } = require("./src/ml/pipeline");
+    
+    // 1. Build & Fit (Fit ONLY on training data to prevent leakage)
+    let pipeline = buildPipeline("decision-tree");
+    pipeline = fitPipeline(pipeline, [sample, sample]); // In real case, use train data
+    
+    // 2. Save for later deployment
+    savePipeline(pipeline, "pipeline.json");
+    
+    // 3. Inference using Pipeline
+    const loadedPipeline = loadPipeline("pipeline.json");
+    const pipelineResult = runPipeline(loadedPipeline, sample);
+    
     const result = predictAtsScore(sample);
     console.log(`\nSample Results:`);
-    console.log(`- ML ATS Score:   ${result.score} (${result.label})`);
+    console.log(`- ML ATS Score:      ${result.score} (${result.label})`);
+    console.log(`- Pipeline Prediction: ${pipelineResult} (0:Poor, 1:Average, 2:Strong)`);
     console.log("------------------------------------------");
     console.log("🚀 ORCHESTRATION COMPLETE");
 }
