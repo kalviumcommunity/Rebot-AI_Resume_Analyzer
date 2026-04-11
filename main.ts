@@ -99,6 +99,39 @@ function main() {
 
     runCV(dummyData, dummyLabels);
     console.log("------------------------------------------");
+
+    // 🔥 Milestone 5.38: Class Imbalance Handling
+    console.log("\n🔥 MILESTONE 5.38: CLASS IMBALANCE HANDLING");
+    const { checkClassDistribution } = require("./src/ml/analysis/classDistribution");
+    const { baselineModel } = require("./src/ml/baseline");
+    const { calculateBinaryConfusionMatrix } = require("./src/ml/metrics/confusionMatrix");
+    const { classificationAnalysis } = require("./src/ml/metrics/classificationAnalysis");
+    const { tuneThreshold } = require("./src/ml/threshold");
+
+    // 1. Diagnose Imbalance
+    checkClassDistribution(dummyLabels);
+
+    // 2. Evaluate Baseline
+    baselineModel(dummyLabels);
+
+    // 3. Train & Analyze Weighted Model
+    const { trainLogisticModel, predictLogistic } = require("./src/ml/logisticModel");
+    const weightedModel = trainLogisticModel(dummyData.slice(0, 80), dummyLabels.slice(0, 80));
+    
+    const testF = dummyData.slice(80);
+    const testL = dummyLabels.slice(80);
+    const preds = testF.map(f => predictLogistic(weightedModel, f));
+
+    // 4. Detailed Metrics
+    const { TP, FP, FN } = calculateBinaryConfusionMatrix(testL, preds, 2);
+    classificationAnalysis(TP, FP, FN);
+
+    // 5. Threshold Tuning Demo
+    const { predictLogisticProb } = require("./src/ml/logisticModel");
+    const probs = testF.map(f => predictLogisticProb(weightedModel, f));
+    tuneThreshold(probs, testL, 2);
+
+    console.log("------------------------------------------");
     console.log("🚀 ORCHESTRATION COMPLETE");
 }
 
