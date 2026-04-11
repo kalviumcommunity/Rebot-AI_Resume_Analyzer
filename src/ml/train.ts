@@ -33,11 +33,23 @@ export function trainModelWithSMOTE(data: any[][], labels: string[]) {
   console.log(`[PIPELINE] Rebalanced training set size: ${finalTrainData.length}`);
   console.log("✅ Training with balanced synthetic data. (Zero Leakage Verified)");
 
+  // 🔥 Milestone 5.43: Persist the intelligence
+  const finalModel = {
+    weights: { keywordScore: 0.25, actionVerbs: 0.25, metrics: 0.25, structure: 0.25 },
+    threshold: 0.6,
+    version: "v1.1",
+    createdAt: new Date().toISOString().split('T')[0]
+  };
+  
+  const { saveModel } = require("./saveModel");
+  saveModel(finalModel, "ats_model.json");
+
   return {
     trainData: finalTrainData,
     testData,
     trainLabels: finalTrainLabels,
-    testLabels
+    testLabels,
+    model: finalModel
   };
 }
 

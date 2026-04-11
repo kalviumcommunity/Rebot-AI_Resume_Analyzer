@@ -1,0 +1,14 @@
+{
+  "version": "v1.1",
+  "createdBy": "Rebot AI Engine",
+  "modelType": "Ensemble Scoring (Boosting)",
+  "accuracy": 0.89,
+  "f1Score": 0.74,
+  "features": [
+    "keywordScore",
+    "actionVerbs",
+    "metrics",
+    "structure"
+  ],
+  "lastUpdated": "2026-04-11"
+}
