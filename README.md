@@ -340,6 +340,34 @@ We implemented a **Hybrid Optimization Strategy** using both Grid Search and Ran
 
 ---
 
+## 🔥 ML Pipeline Architecture (Milestone 5.36)
+
+The project uses a unified **Production-Grade ML Pipeline** to handle preprocessing and model prediction. This ensures that the system is safe from data leakage and highly reproducible.
+
+### 🏗️ Pipeline Steps
+
+1. **Text Cleaning**: Normalizes raw resume content using `cleanRawText`.
+2. **Feature Extraction**: Converts cleaned text into a structured vector via `extractResumeFeatures`.
+3. **Feature Scaling**: Applies Z-score standardization (StandardScaler) to numerical features.
+4. **Model Prediction**: Generates classification results using the `Enhanced Decision Tree` engine.
+
+### 🛡️ Why This Architecture?
+
+- **Prevents Data Leakage**: Pipelines ensure that preprocessing statistics (like means and stds) are learned ONLY from training data and never see the validation set.
+- **Consistent Transformations**: Guarantees the exact same sequence of steps during training and inference.
+- **Deployable Artifacts**: The entire pipeline is serialized to `pipeline.json`, allowing for one-click deployment without manual feature engineering.
+- **Reproducibility**: Eliminates "it works on my machine" errors by versioning the entire workflow as a single unit.
+
+> [!IMPORTANT]
+> Pipelines ensure that preprocessing is applied consistently across training and prediction, preventing data leakage.
+
+### 🎤 Interview Readiness (Milestone 5.36)
+
+**Q: How do you handle preprocessing consistency in production?**
+> "I implemented a full ML pipeline to ensure preprocessing, feature extraction, and model prediction are applied consistently, preventing data leakage and making the system production-ready. This encapsulates the entire workflow into a single deployable artifact."
+
+---
+
 ## 🧠 ML Engineering Pipeline
 
 Every prediction follows a professional, traceable path:
