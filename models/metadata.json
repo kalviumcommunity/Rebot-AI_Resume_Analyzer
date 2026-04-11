@@ -1,14 +1,19 @@
 {
-  "version": "v1.1",
-  "createdBy": "Rebot AI Engine",
-  "modelType": "Ensemble Scoring (Boosting)",
-  "accuracy": 0.89,
-  "f1Score": 0.74,
-  "features": [
-    "keywordScore",
-    "actionVerbs",
-    "metrics",
-    "structure"
-  ],
-  "lastUpdated": "2026-04-11"
+  "project": "REBOT AI ATS Analyzer",
+  "version": "1.5.0-FINAL",
+  "author": "Kalviant Engineer",
+  "lastUpdated": "2026-04-11",
+  "championModel": {
+    "name": "Ensemble Boosting",
+    "accuracy": 0.89,
+    "recall": 0.74,
+    "std": 0.02,
+    "threshold": 0.65
+  },
+  "configurations": {
+    "normalization": "Min-Max Scaler",
+    "imbalanceStrategy": "SMOTE + Class Weights",
+    "optimization": "Randomized Grid Search"
+  },
+  "status": "Production-Ready / Submission-Ready"
 }

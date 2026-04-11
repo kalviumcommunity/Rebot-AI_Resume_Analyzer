@@ -1,20 +1,31 @@
 /**
- * Milestone 5.39: Weighted Evaluation Routine
- * Responsibility: Measuring success using Recall, Precision, and F1.
+ * Milestone 5.46: Final Evaluation Layer
+ * Responsibility: Reporting cross-validation metrics with stability indicators (Mean ± Std).
  */
-import { calculateBinaryConfusionMatrix } from "./metrics/confusionMatrix";
-import { classificationAnalysis } from "./metrics/classificationAnalysis";
 
-export function evaluateModel(actual: number[], predicted: number[]) {
-  console.log("\n📊 PERFORMING WEIGHTED EVALUATION");
+export interface ModelResult {
+  name: string;
+  cvScores: number[];
+}
 
-  // We convert to binary (0=Poor/Avg, 2=Strong) or similar for the demo
-  // For the demo we focus on positiveClass = 2
-  const { TP, FP, FN } = calculateBinaryConfusionMatrix(actual, predicted, 2);
+/**
+ * Calculates and prints final evaluation metrics.
+ * Reports Mean ± Std for robust assessment.
+ */
+export function reportCVScores(results: ModelResult[]) {
+  console.log("\n🧪 [EVALUATION] Final Cross-Validation Rankings");
+  console.log("----------------------------------------------");
+  console.log("Model      | Accuracy (Mean ± Std) | Status");
+  console.log("----------------------------------------------");
 
-  const metrics = classificationAnalysis(TP, FP, FN);
-
-  console.log("\n✅ EVALUATION COMPLETE. Final Metric: F1 = " + metrics.f1.toFixed(3));
-
-  return metrics;
+  results.forEach(res => {
+    const mean = res.cvScores.reduce((a, b) => a + b, 0) / res.cvScores.length;
+    const std = Math.sqrt(res.cvScores.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / res.cvScores.length);
+    
+    // Stability Check: Std < 0.05 is considered "Stable"
+    const status = std < 0.05 ? "Stable ✅" : "Volatile ⚠️";
+    
+    console.log(`${res.name.padEnd(10)} | ${mean.toFixed(2)} (±${std.toFixed(2)})`.padEnd(35) + `| ${status}`);
+  });
+  console.log("----------------------------------------------");
 }
