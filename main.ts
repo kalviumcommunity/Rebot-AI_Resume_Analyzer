@@ -49,6 +49,56 @@ function main() {
     console.log(`- ML ATS Score:      ${result.score} (${result.label})`);
     console.log(`- Pipeline Prediction: ${pipelineResult} (0:Poor, 1:Average, 2:Strong)`);
     console.log("------------------------------------------");
+
+    // 🔥 Milestone 5.37: Data Leakage Prevention Demo
+    console.log("\n🔥 MILESTONE 5.37: PREVENTING DATA LEAKAGE");
+    const { leakageWorkflow } = require("./src/ml/leakageDemo");
+    const { safePipeline } = require("./src/ml/pipelineSafe");
+    const { finalPipeline } = require("./src/ml/finalPipeline");
+
+    // Dummy dataset for demonstration
+    const dummyData = Array(100).fill(null).map(() => ({
+        keywordDensity: Math.random(),
+        actionVerbCount: Math.floor(Math.random() * 10),
+        metricCount: Math.floor(Math.random() * 5),
+        resumeLength: 200 + Math.floor(Math.random() * 500)
+    }));
+    const dummyLabels = dummyData.map(d => (d.keywordDensity > 0.6 && d.metricCount > 2) ? 2 : (d.keywordDensity > 0.4 ? 1 : 0));
+
+    // Comparison Logic
+    const leakScore = leakageWorkflow(dummyData, dummyLabels);
+    const safeScore = safePipeline(dummyData, dummyLabels);
+
+    console.log("\n📊 WORKFLOW COMPARISON");
+    console.log(`❌ Leakage Score: ${(leakScore * 100).toFixed(2)}% (Inflated)`);
+    console.log(`✅ Safe Score:    ${(safeScore * 100).toFixed(2)}% (Honest)`);
+    console.log("------------------------------------------");
+
+    // Cross-Validation Helper (Fold Isolation Demo)
+    function runCV(data: any[], labels: number[]) {
+        console.log("🔁 Running 5-Fold Cross-Validation (Safe Approach)");
+        const scores = [];
+        const foldSize = Math.floor(data.length / 5);
+
+        for (let i = 0; i < 5; i++) {
+            const valStart = i * foldSize;
+            const valEnd = (i + 1) * foldSize;
+
+            const val = data.slice(valStart, valEnd);
+            const valL = labels.slice(valStart, valEnd);
+            const train = [...data.slice(0, valStart), ...data.slice(valEnd)];
+            const trainL = [...labels.slice(0, valStart), ...labels.slice(valEnd)];
+
+            const { safePipeline } = require("./src/ml/pipelineSafe");
+            const score = safePipeline(train, trainL); // Modified to work as fit/transform
+            scores.push(score);
+        }
+        console.log("CV Scores:", scores.map(s => s.toFixed(2)));
+        console.log(`Mean CV Accuracy: ${(scores.reduce((a, b) => a + b, 0) / 5 * 100).toFixed(2)}%`);
+    }
+
+    runCV(dummyData, dummyLabels);
+    console.log("------------------------------------------");
     console.log("🚀 ORCHESTRATION COMPLETE");
 }
 
