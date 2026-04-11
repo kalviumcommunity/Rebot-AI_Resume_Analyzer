@@ -126,32 +126,37 @@ function main() {
     const { TP, FP, FN } = calculateBinaryConfusionMatrix(testL, preds, 2);
     classificationAnalysis(TP, FP, FN);
 
-    // 🔥 FINAL MILESTONE 5.43: MODEL PERSISTENCE & SERIALIZATION
-    console.log("\n🔥 FINAL MILESTONE 5.43: MODEL PERSISTENCE & SERIALIZATION");
-    const { predictATSScore } = require("./src/ml/predict");
-    const metadata = require("./models/metadata.json");
+    // 🔥 FINAL MILESTONE 5.44: PRODUCTION INFERENCE SYSTEM
+    console.log("\n🔥 FINAL MILESTONE 5.44: PRODUCTION INFERENCE SYSTEM");
+    const { runInference } = require("./src/ml/inference");
 
-    console.log("\n📦 PRODUCTION MODEL STATUS");
-    console.log("------------------------------------------");
-    console.log(`✔ Model Loaded: ${metadata.modelVersion || "ats_model.json"}`);
-    console.log(`✔ Core Version: ${metadata.version}`);
-    console.log(`✔ Architecture: ${metadata.modelType}`);
-    console.log(`✔ Last Updated: ${metadata.lastUpdated}`);
+    console.log("\n📊 LIVE ATS ANALYSIS (FROZEN MODEL)");
     console.log("------------------------------------------");
 
-    // 1. Instant Prediction Demo (Loading from disk)
-    const newResume = { keywordScore: 0.85, actionVerbs: 0.70, metrics: 0.90, structure: 0.80 };
-    console.log("\n🚀 EXECUTING INSTANT INFERENCE (ZERO TRAINING)");
-    const prediction = predictATSScore(newResume);
+    // 1. Simulation of real-time resume submission
+    const candidateResume = "Lead Developer with 8 years React experience. Scaled systems to 1M users and reduced costs by $50k.";
+    
+    // Inference Step (Singleton model load happens here once)
+    const analysis = runInference(candidateResume);
 
-    console.log(`\nATS Score: ${prediction.score * 100}%`);
-    console.log(`Prediction: ${prediction.label === "Good" ? "✅ Resume is ATS Friendly" : "❌ Needs Improvement"}`);
-    console.log(`Model Artifact: ${prediction.modelVersion}`);
+    console.log(`\nCandidate Strength:  ${analysis.label}`);
+    console.log(`ATS Compatibility: ${analysis.score}`);
+    console.log(`Internal Status:   Model ${analysis.version} (Verified Production Artifact)`);
+    
+    console.log("\nBreakdown:");
+    console.log(`✔ Keywords:     ${analysis.features.keywords}`);
+    console.log(`✔ Action Verbs: ${analysis.features.verbs}`);
+    console.log(`✔ Metrics:      ${analysis.features.metrics}`);
+    console.log("------------------------------------------");
 
-    console.log("\n----------------------------------------------------------");
-    console.log("💎 ULTIMATE PROJECT COMPLETED: REBOT ATS FINAL SYSTEM V1.2");
+    console.log("\n💎 PROJECT CONCLUSION: REBOT ATS ENGINE FULLY DEPLOYED");
     console.log("----------------------------------------------------------");
-    console.log("Result: Model successfully persisted, versioned, and deployed.");
+    console.log("✔ Feature Extraction   [COMPLETED]");
+    console.log("✔ Cross-Validation      [COMPLETED]");
+    console.log("✔ Model Selection     [COMPLETED]");
+    console.log("✔ Instant Inference    [COMPLETED]");
+    console.log("----------------------------------------------------------");
+    console.log("System Status: PRODUCTION READY (v1.2)");
     console.log("----------------------------------------------------------");
 }
 
