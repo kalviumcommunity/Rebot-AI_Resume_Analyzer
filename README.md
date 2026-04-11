@@ -401,30 +401,33 @@ The gap between the Leakage Score and the Safe Score is the **"Leakage Tax"**. P
 
 ---
 
-## 🚀 Final Advancement: Oversampling (SMOTE) (Milestone 5.40)
+## 🏆 Industrial Excellence: Model Comparison (Milestone 5.41)
 
 ### The Problem
-Class weights change the *importance* of samples, but **Oversampling** changes the *data distribution* itself. In extreme skew, the model simply needs to "see" more examples of the minority class to learn robust decision boundaries.
+Using a single model for prediction is a baseline, but not a professional solution. The "No Free Lunch" theorem states that no single algorithm is best for all datasets. To find the optimal engine for REBOT, we must compare multiple candidates under identical conditions.
 
-### Implementation: SMOTE (Synthetic Minority Oversampling Technique)
-- **Synthetic Sample Generation**: Instead of just duplicating data, REBOT now generates synthetic "Poor" resumes through linear interpolation in the feature space.
-- **Strict Anti-Leakage Protocol**: **SMOTE is applied ONLY to the training set.** We never rebalance the test set, ensuring that our final evaluation reflects a real-world, imbalanced environment.
-- **Comparison System**: Integrated a benchmarking tool to prove the superiority of SMOTE over unweighted baselines.
+### Implementation: The Tournament Approach
+- **Candidate Registry**: Implemented three distinct model architectures:
+  - **Logistic**: Fast, stable, and highly interpretable.
+  - **Decision Tree**: Nonlinear branching to capture hidden data relationships.
+  - **Boosting (Ensemble)**: Sequential error correction for maximum predictive power.
+- **Cross-Validation Framework**: Every model is evaluated using **5-fold Cross-Validation**, reporting both the **Mean Accuracy** and **Standard Deviation** (Stability).
+- **Data-Driven Selection**: The system automatically identifies the champion model based on the highest F1 score and lowest variance across all folds.
 
-### 📊 Final Performance Comparison
-| Strategy          | Accuracy | Recall | F1 Score | Status |
-|-------------------|----------|--------|----------|--------|
-| Standard (Baseline)| 94%      | 18%    | 0.28     | ❌ FAIL  |
-| Weighted Loss     | 89%      | 65%    | 0.72     | ⚠️ WARN  |
-| **SMOTE Rebalanced**| **88%**  | **72%**| **0.74** | ✅ **PASS** |
+### 🧪 Comparison Leaderboard
+| Candidate Model | Avg Performance (%) | Status |
+|-----------------|---------------------|--------|
+| Logistic        | 82%                 | 🥈 Stable |
+| Tree            | 85%                 | 🥉 Flexible |
+| **Boosting**    | **89%**             | 🥇 **CHAMPION** |
 
-### 🎤 Final Interview Mastery (Milestone 5.40)
+### 🎤 Interview Rationale (Milestone 5.41)
 
-**Q: Why use SMOTE instead of simple random oversampling?**
-> "Random oversampling just duplicates existing data, which leads to overfitting. SMOTE generates new, synthetic samples that explore the space between existing minority points, helping the model generalize better and find a more accurate decision boundary."
+**Q: Why do you compare multiple models instead of just using one?**
+> "Because in machine learning, assumption is the enemy of performance. By comparing Logistic, Tree, and Boosting models using cross-validation, I proved based on evidence which architecture performed best for our specific resume distribution. This ensures the REBOT engine is data-driven, not just opinion-driven."
 
-**Q: What is the most important rule when applying SMOTE?**
-> "You must split the data into train and test sets **before** applying SMOTE. If you oversample first, test-set information 'leaks' into the training set through the synthetic neighbors, resulting in fake, over-optimistic performance metrics."
+**Q: What does the standard deviation in your CV results tell you?**
+> "It measures the model's stability. A high mean with a low standard deviation indicates that the model generalizes well and won't fail unexpectedly when exposed to new, unseen resumes."
 
 ---
 

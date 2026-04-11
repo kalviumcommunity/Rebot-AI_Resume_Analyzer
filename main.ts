@@ -126,24 +126,33 @@ function main() {
     const { TP, FP, FN } = calculateBinaryConfusionMatrix(testL, preds, 2);
     classificationAnalysis(TP, FP, FN);
 
-    // 🔥 FINAL MILESTONE 5.40: OVERSAMPLING & SMOTE
-    console.log("\n🔥 FINAL MILESTONE 5.40: OVERSAMPLING & SMOTE");
-    const { pipelineWithSMOTE } = require("./src/ml/pipelineWithSMOTE");
-    const { compareBalancingStrategies } = require("./src/ml/compare");
-    const { evaluateModel } = require("./src/ml/evaluate");
+    // 🔥 FINAL MILESTONE 5.41: MODEL SELECTION & COMPARISON
+    console.log("\n🔥 FINAL MILESTONE 5.41: MODEL SELECTION & COMPARISON");
+    const { selectBestModel } = require("./src/ml/selectBestModel");
+    const { compareModels } = require("./src/ml/compareModels");
+    const { models: candidateModels } = require("./src/ml/models");
 
-    // 1. Execute Integrated Pipeline
-    const { actual, predicted } = pipelineWithSMOTE(dummyData, labelsStr);
+    // 1. Run Tournament
+    const bestModelName = selectBestModel(dummyData);
+    const bestModelFunc = candidateModels[bestModelName];
 
-    // 2. Evaluate SMOTE Performance
-    console.log("\n📊 SMOTE-BALANCED MODEL EVALUATION:");
-    evaluateModel(actual, predicted);
+    // 2. Generate Comparison Leaderboard
+    const comparisonResults = compareModels(dummyData);
 
-    // 3. Final Comparison Demo
-    compareBalancingStrategies();
+    console.log("\n🧪 MODEL COMPARISON LEADERBOARD");
+    console.log("------------------------------------------");
+    console.log("| Candidate Model | Avg Performance (%) |");
+    console.log("|-----------------|---------------------|");
+    comparisonResults.forEach((res: any) => {
+      const marker = res.model === bestModelName ? " ✅ (BEST)" : "";
+      console.log(`| ${res.model.padEnd(15)} | ${(parseFloat(res.score) * 100).toFixed(0).padStart(19)}% |${marker}`);
+    });
+    console.log("------------------------------------------");
+    
+    console.log(`\n🏆 FINAL SELECTION: ${bestModelName} (Selected for production deployment)`);
 
     console.log("------------------------------------------");
-    console.log("🏆 PROJECT COMPLETED: INDUSTRY-GRADE ML PIPELINE ESTABLISHED");
+    console.log("💎 ULTIMATE PROJECT COMPLETED: REBOT ATS ENGINE V1.0");
     console.log("------------------------------------------");
 }
 
